@@ -45,6 +45,15 @@ export default function TabLayout() {
         }}
       />
 
+      {/* Tab baru untuk halaman Cards */}
+      <Tabs.Screen
+        name="cards-example"
+        options={{
+          title: 'Cards',
+          tabBarIcon: ({ color }) => <FontAwesome size={28} name="clone" color={color} />,
+        }}
+      />
+
       <Tabs.Screen
         name="explore"
         options={{
