@@ -1,11 +1,21 @@
+import { useRouter } from 'expo-router';
 import React from 'react';
-import { FlatList, StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
+import { JobCard } from '../../components/JobCard';
 import { ThemedText } from '../../components/ThemedText';
 import { ThemedView } from '../../components/ThemedView';
-import { JobCard } from '../../components/JobCard';
-import { jobs } from '../../constants/mockJobs'; // Impor data pekerjaan
+import { jobs } from '../../constants/mockJobs'; // Import job data
 
 export default function SavedJobsScreen() {
+  const router = useRouter(); // Initialize the router for navigation
+
+  // Function to handle when a job card is pressed
+  const handleNavigateToDetail = (jobId: string) => {
+    // Navigate to the detail screen, passing the job ID in the URL
+    router.push(`/job-detail/job-detail/${jobId}`);
+  };
+
   return (
     <ThemedView style={styles.container}>
       <View style={styles.header}>
@@ -16,9 +26,15 @@ export default function SavedJobsScreen() {
       </View>
       <FlatList
         data={jobs}
-        renderItem={({ item }) => <JobCard job={item} />}
+        renderItem={({ item }) => (
+          // Wrap the JobCard in a TouchableOpacity to make it pressable
+          <TouchableOpacity onPress={() => handleNavigateToDetail(item.id)}>
+            <JobCard job={item} />
+          </TouchableOpacity>
+        )}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.list}
+        showsVerticalScrollIndicator={false}
       />
     </ThemedView>
   );
