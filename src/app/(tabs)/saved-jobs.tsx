@@ -13,7 +13,7 @@ export default function SavedJobsScreen() {
   // Function to handle when a job card is pressed
   const handleNavigateToDetail = (jobId: string) => {
     // Navigate to the detail screen, passing the job ID in the URL
-    router.push(`/job-detail/job-detail/${jobId}`);
+    router.push(`/job-detail/job-detail?id=${jobId}`);
   };
 
   return (
