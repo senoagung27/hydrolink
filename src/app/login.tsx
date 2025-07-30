@@ -1,6 +1,5 @@
-import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Checkbox } from '../../src/components/Checkbox';
@@ -9,34 +8,34 @@ import { Header } from '../../src/components/Header';
 import { PasswordInput } from '../../src/components/PasswordInput';
 import { SocialAuthButton } from '../../src/components/SocialAuthButton';
 import { ThemedButton } from '../../src/components/ThemedButton';
-import { useAuth } from '../app/_layout';
+import { useAuth } from '../context/AuthContext'; // <-- Ganti path ke context yang benar
 
 export default function LoginScreen() {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    // Gunakan email yang valid dari reqres.in untuk testing
+    const [email, setEmail] = useState('seno@agung.com'); 
+    const [password, setPassword] = useState('12345678'); // Password yang valid
     const [rememberMe, setRememberMe] = useState(false);
-    const router = useRouter();
-    const { signIn } = useAuth();
+    const { login } = useAuth(); // <-- Gunakan fungsi login dari context
 
-    const handleLogin = () => {
-        console.log('Login attempt with:', { email, password, rememberMe });
-        signIn();
-        router.replace('/(tabs)/saved-jobs');
+    const handleLogin = async () => {
+        try {
+            await login(email, password);
+            // Navigasi tidak diperlukan di sini, akan ditangani oleh RootLayout
+        } catch (error) {
+            Alert.alert("Login Failed", (error as Error).message);
+        }
     };
 
     const handleGoogleSignIn = () => {
         console.log('Signing in with Google');
-        // Implement Google sign-in logic here
     };
 
     const handleSignUp = () => {
         console.log('Navigating to Sign Up');
-        // Navigate to sign up screen
     };
 
     const handleForgotPassword = () => {
         console.log('Navigating to Forgot Password');
-        // Navigate to forgot password screen
     };
 
     return (

@@ -1,63 +1,52 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
+import { Stack, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import React, { useEffect, createContext, useContext, useState } from 'react';
-import { ActivityIndicator } from 'react-native';
+import React, { useEffect } from 'react';
+import { ActivityIndicator, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import 'react-native-reanimated';
 
-import { NotesProvider } from '../context/NotesContext';
+import { AuthProvider, useAuth } from '../context/AuthContext'; // <-- Gunakan AuthContext yang benar
 import { JobProvider } from '../context/JobContext';
+import { NotesProvider } from '../context/NotesContext';
 import { useColorScheme } from '../hooks/useColorScheme';
 
-type AuthContextType = {
-  isAuthenticated: boolean;
-  isLoading: boolean;
-  signIn: () => void;
-  signOut: () => void;
-};
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) throw new Error('useAuth must be used within an AuthProvider');
-  return context;
-};
-const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+function RootLayoutNav() {
+  const { token, isLoading } = useAuth();
+  const segments = useSegments();
+  const router = useRouter();
 
   useEffect(() => {
-    setTimeout(() => setIsLoading(false), 500);
-  }, []);
+    if (isLoading) return; // Jangan lakukan apa-apa jika masih loading
 
-  const signIn = () => setIsAuthenticated(true);
-  const signOut = () => setIsAuthenticated(false);
+    const inTabsGroup = segments[0] === '(tabs)';
 
-  return (
-    <AuthContext.Provider value={{ isAuthenticated, isLoading, signIn, signOut }}>
-      {children}
-    </AuthContext.Provider>
-  );
-};
-
-function RootLayoutNav() {
-  const { isAuthenticated, isLoading } = useAuth();
+    if (token && !inTabsGroup) {
+      // Arahkan ke home jika pengguna punya token tapi tidak di dalam grup (tabs)
+      router.replace('/(tabs)');
+    } else if (!token && inTabsGroup) {
+      // Arahkan ke login jika pengguna tidak punya token tapi mencoba akses (tabs)
+      router.replace('/login');
+    }
+  }, [token, isLoading, segments]);
 
   if (isLoading) {
-    return <ActivityIndicator size="large" style={{ flex: 1, justifyContent: 'center' }} />;
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
   }
 
   return (
     <Stack>
-      {isAuthenticated ? (
-        <>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="job-detail/job-detail" options={{ title: 'Job Detail' }} />
-        </>
-      ) : (
-         <Stack.Screen name="login" options={{ headerShown: false }} />
-      )}
+      {/* Rute yang tidak dilindungi (login) */}
+      <Stack.Screen name="login" options={{ headerShown: false }} />
+
+      {/* Rute yang dilindungi (tabs dan detail) */}
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen name="job-detail/job-detail" options={{ title: 'Job Detail' }} />
     </Stack>
   );
 }
@@ -73,6 +62,7 @@ export default function RootLayout() {
   }
 
   return (
+    // Bungkus semua provider di dalam AuthProvider yang benar
     <AuthProvider>
       <JobProvider>
         <NotesProvider>

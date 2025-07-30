@@ -60,7 +60,7 @@ export default function HomeScreen() {
 
   if (initialLoading) {
     return (
-      <ThemedView style={[styles.container, { paddingTop: insets.top }]}>
+      <ThemedView style={styles.container}>
         <ListHeader />
         <FlatList
           data={[1, 2, 3]}
@@ -90,7 +90,7 @@ export default function HomeScreen() {
   };
 
   return (
-    <ThemedView style={[styles.container, { paddingTop: insets.top }]}>
+    <ThemedView style={styles.container}>
       <FlatList
         ListHeaderComponent={ListHeader}
         data={displayedJobs}

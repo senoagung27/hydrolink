@@ -57,7 +57,7 @@ export default function SavedJobsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 60,
+    paddingTop: 20,
     paddingHorizontal: 20,
     backgroundColor: '#F8F9FA',
   },
