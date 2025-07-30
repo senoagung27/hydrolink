@@ -1,74 +1,80 @@
-import { Tabs } from 'expo-router';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import React from 'react';
 import { Image, StyleSheet, Platform } from 'react-native';
-
 import { Colors } from '../../constants/Colors';
 import { useColorScheme } from '../../hooks/useColorScheme';
 import { IconSymbol } from '../../components/ui/IconSymbol';
 import { HapticTab } from '../../components/HapticTab';
-import TabBarBackground from '../../components/ui/TabBarBackground'; // This might be undefined on web/android, but it's okay.
+import TabBarBackground from '../../components/ui/TabBarBackground';
+
+// Import your screen components
+import HomeScreen from './index';
+import ExploreScreen from './explore';
+import SavedJobsScreen from './saved-jobs';
+import CardsExampleScreen from './cards-example';
+
+const Tab = createBottomTabNavigator();
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
 
   return (
-    <Tabs
+    <Tab.Navigator
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: Colors[colorScheme ?? 'light'].tabIconDefault, // Set a default background
+          backgroundColor: Colors[colorScheme ?? 'light'].tabIconDefault,
         },
-        tabBarBackground: () => <TabBarBackground />, // Use TabBarBackground if defined
+        tabBarBackground: () => <TabBarBackground />,
       }}>
-      <Tabs.Screen
-        name="index"
+      <Tab.Screen
+        name="Home"
+        component={HomeScreen}
         options={{
           title: 'Home',
           tabBarIcon: ({ color, focused }) => (
             <IconSymbol name={focused ? 'house.fill' : 'house.fill'} color={color} />
           ),
-          tabBarButton: HapticTab,
+          tabBarButton: (props) => <HapticTab {...props} />,
         }}
       />
-      <Tabs.Screen
-        name="explore"
+      <Tab.Screen
+        name="Explore"
+        component={ExploreScreen}
         options={{
           title: 'Explore',
           tabBarIcon: ({ color, focused }) => (
             <IconSymbol name={focused ? 'paperplane.fill' : 'paperplane.fill'} color={color} />
           ),
-          tabBarButton: HapticTab,
+          tabBarButton: (props) => <HapticTab {...props} />,
         }}
       />
-      <Tabs.Screen
-        name="saved-jobs"
+      <Tab.Screen
+        name="SavedJobs"
+        component={SavedJobsScreen}
         options={{
           title: 'Saved Jobs',
           tabBarIcon: ({ color, focused }) => (
             <Image
-              source={require('../../assets/images/favicon.png')} // cite: 6
+              source={require('../../assets/images/favicon.png')}
               style={{ tintColor: color, width: 24, height: 24 }}
             />
           ),
-          tabBarButton: HapticTab,
+          tabBarButton: (props) => <HapticTab {...props} />,
         }}
       />
-      <Tabs.Screen
-        name="cards-example"
+      <Tab.Screen
+        name="CardsExample"
+        component={CardsExampleScreen}
         options={{
           title: 'Cards',
           tabBarIcon: ({ color, focused }) => (
             <IconSymbol name={focused ? 'chevron.left.forwardslash.chevron.right' : 'chevron.left.forwardslash.chevron.right'} color={color} />
           ),
-          tabBarButton: HapticTab,
+          tabBarButton: (props) => <HapticTab {...props} />,
         }}
       />
-    </Tabs>
+    </Tab.Navigator>
   );
 }
-
-// Remove the styles if they are no longer needed, or adjust them for the Tabs component if necessary.
-const styles = StyleSheet.create({
-  // No longer needed if using default Tabs behavior or adjusted within Tabs screenOptions
-});

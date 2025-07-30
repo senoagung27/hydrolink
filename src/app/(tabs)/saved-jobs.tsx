@@ -1,40 +1,54 @@
-import { useRouter } from 'expo-router';
 import React from 'react';
-import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { JobCard } from '../../components/JobCard';
 import { ThemedText } from '../../components/ThemedText';
 import { ThemedView } from '../../components/ThemedView';
-import { jobs } from '../../constants/mockJobs'; // Import job data
+import { useJob } from '../../context/JobContext';
+import { useSavedJobs } from '../../hooks/useSavedJobs'; // NEW: Import the custom hook
 
 export default function SavedJobsScreen() {
-  const router = useRouter(); // Initialize the router for navigation
+  const { loading } = useJob();
+  const {
+    savedJobs,
+    isRefreshing,
+    handleRefresh,
+    handleNavigateToDetail,
+    handleDeleteJob,
+    handleUpdateJob,
+    deleteAllJobs,
+  } = useSavedJobs();
 
-  // Function to handle when a job card is pressed
-  const handleNavigateToDetail = (jobId: string) => {
-    // Navigate to the detail screen, passing the job ID in the URL
-    router.push(`/job-detail/job-detail/${jobId}`);
-  };
+  if (loading && !isRefreshing) {
+    return (
+      <View style={styles.centered}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
 
   return (
     <ThemedView style={styles.container}>
       <View style={styles.header}>
         <ThemedText type="title">Save Job</ThemedText>
-        <TouchableOpacity>
-          <Text style={styles.deleteAllText}>Delete all</Text>
-        </TouchableOpacity>
+        {savedJobs.length > 0 && (
+          <TouchableOpacity onPress={deleteAllJobs}>
+            <Text style={styles.deleteAllText}>Delete all</Text>
+          </TouchableOpacity>
+        )}
       </View>
       <FlatList
-        data={jobs}
+        data={savedJobs}
         renderItem={({ item }) => (
-          // Wrap the JobCard in a TouchableOpacity to make it pressable
           <TouchableOpacity onPress={() => handleNavigateToDetail(item.id)}>
-            <JobCard job={item} />
+            <JobCard job={item} onDelete={() => handleDeleteJob(item.id)} onUpdate={handleUpdateJob} />
           </TouchableOpacity>
         )}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.list}
         showsVerticalScrollIndicator={false}
+        onRefresh={handleRefresh}
+        refreshing={isRefreshing}
       />
     </ThemedView>
   );
@@ -59,5 +73,10 @@ const styles = StyleSheet.create({
   },
   list: {
     paddingBottom: 20,
+  },
+  centered: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
