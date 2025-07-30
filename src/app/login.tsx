@@ -1,23 +1,20 @@
-// app/LoginScreen.tsx (or wherever you prefer to keep your screens)
+import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
-import { Colors } from '../../src/constants/Colors';
-import { useAuth } from '../app/_layout'; // Adjust path if needed
 
-// Import the new components
-import { Header } from '../../src/components/Header';
-import { FormInput } from '../../src/components/FormInput';
-import { PasswordInput } from '../../src/components/PasswordInput';
 import { Checkbox } from '../../src/components/Checkbox';
-import { ThemedButton } from '../../src/components/ThemedButton'; // Assuming existing
+import { FormInput } from '../../src/components/FormInput';
+import { Header } from '../../src/components/Header';
+import { PasswordInput } from '../../src/components/PasswordInput';
 import { SocialAuthButton } from '../../src/components/SocialAuthButton';
+import { ThemedButton } from '../../src/components/ThemedButton';
+import { useAuth } from '../app/_layout';
 
 export default function LoginScreen() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [rememberMe, setRememberMe] = useState(false); // State for remember me
+    const [rememberMe, setRememberMe] = useState(false);
     const router = useRouter();
     const { signIn } = useAuth();
 
@@ -82,8 +79,7 @@ export default function LoginScreen() {
 
           <SocialAuthButton
             title="SIGN IN WITH GOOGLE"
-            // icon={require("../src/assets/images/favicon.png")} // Use the correct path for Google icon
-            icon={require("../../src/assets/images/favicon.png")} // Use the correct path for Google icon
+            icon={require("../../src/assets/images/favicon.png")} 
             onPress={handleGoogleSignIn}
           />
 
