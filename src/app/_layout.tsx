@@ -37,7 +37,6 @@ function RootLayoutNav() {
       router.replace('/login');
     }
   }, [token, isLoading, segments, router]);
-  // --- BATAS PERBAIKAN ---
 
   if (isLoading) {
     return (

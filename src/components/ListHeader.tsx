@@ -1,3 +1,4 @@
+// src/components/ListHeader.tsx
 import { FontAwesome } from '@expo/vector-icons';
 import React from 'react';
 import {
@@ -52,6 +53,10 @@ export const ListHeader = () => {
                         <Text style={styles.joinButtonText}>Join Now</Text>
                     </TouchableOpacity>
                 </View>
+                <Image
+                    source={require('../assets/images/card_home.png')}
+                    style={styles.promoImage}
+                />
             </View>
             <ThemedText style={styles.sectionTitle}>Find Your Job</ThemedText>
             <View style={styles.findJobContainer}>
@@ -112,11 +117,13 @@ const styles = StyleSheet.create({
     promoCard: {
         backgroundColor: '#3D3D71',
         borderRadius: 20,
-        padding: 20,
+        paddingVertical: 20,
+        paddingLeft: 20,
         marginVertical: 10,
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
+        height: 140,
     },
     promoTextLarge: {
         color: 'white',
@@ -139,6 +146,14 @@ const styles = StyleSheet.create({
     joinButtonText: {
         color: 'white',
         fontWeight: 'bold',
+    },
+    promoImage: {
+        width: 150,
+        height: 160,
+        resizeMode: 'contain',
+        position: 'absolute',
+        right: 0,
+        bottom: 0,
     },
     sectionTitle: {
         fontSize: 20,
