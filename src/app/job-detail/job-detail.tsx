@@ -1,3 +1,4 @@
+// src/app/job-detail/job-detail.tsx
 import { FontAwesome } from '@expo/vector-icons';
 import { useLocalSearchParams } from 'expo-router';
 import React, { useState, useEffect } from 'react';
@@ -19,6 +20,7 @@ import { Job } from '../../types/job';
 import { BulletPoint } from '../../components/BulletPoint';
 import { InfoCard } from '../../components/InfoCard';
 import { mapApiDataToJob } from '../../utils/jobUtils';
+import { JobDetailSkeleton } from '../../components/JobDetailSkeleton';
 
 export default function JobDetailScreen() {
     const { id } = useLocalSearchParams();
@@ -49,7 +51,7 @@ export default function JobDetailScreen() {
     };
 
     if (loading) {
-        return <View style={styles.centered}><ActivityIndicator size="large" /></View>;
+        return <JobDetailSkeleton />;
     }
     if (!job) {
         return <View style={styles.centered}><ThemedText>Pekerjaan tidak ditemukan!</ThemedText></View>;

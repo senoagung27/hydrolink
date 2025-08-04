@@ -44,8 +44,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 }
             );
 
-            // --- PERBAIKAN DI SINI ---
-            // Mengambil 'accessToken' dari respons, bukan 'token'
             const responseToken = res.data?.accessToken;
             if (!responseToken) throw new Error('No token returned from login');
 
