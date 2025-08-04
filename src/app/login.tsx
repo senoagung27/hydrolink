@@ -1,3 +1,4 @@
+// src/app/login.tsx
 import React, { useState } from 'react';
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -8,19 +9,18 @@ import { Header } from '../../src/components/Header';
 import { PasswordInput } from '../../src/components/PasswordInput';
 import { SocialAuthButton } from '../../src/components/SocialAuthButton';
 import { ThemedButton } from '../../src/components/ThemedButton';
-import { useAuth } from '../context/AuthContext'; // <-- Ganti path ke context yang benar
+import { useAuth } from '../context/AuthContext';
 
 export default function LoginScreen() {
-    // Gunakan email yang valid dari reqres.in untuk testing
-    const [email, setEmail] = useState('seno@agung.com'); 
-    const [password, setPassword] = useState('12345678'); // Password yang valid
+    const [username, setUsername] = useState('emilys'); // Menggunakan username yang valid
+    const [password, setPassword] = useState('emilyspass'); // Password yang valid
     const [rememberMe, setRememberMe] = useState(false);
-    const { login } = useAuth(); // <-- Gunakan fungsi login dari context
+    const { login } = useAuth();
 
     const handleLogin = async () => {
         try {
-            await login(email, password);
-            // Navigasi tidak diperlukan di sini, akan ditangani oleh RootLayout
+            await login(username, password);
+            // Navigasi akan ditangani oleh RootLayout
         } catch (error) {
             Alert.alert("Login Failed", (error as Error).message);
         }
@@ -47,11 +47,10 @@ export default function LoginScreen() {
 
         <View style={styles.form}>
           <FormInput
-            label="Email"
-            placeholder="BrandoneLouis@gmail.com"
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
+            label="Username" // Label diubah menjadi Username
+            placeholder="emilys" // Placeholder diubah
+            value={username}
+            onChangeText={setUsername}
             autoCapitalize="none"
           />
 

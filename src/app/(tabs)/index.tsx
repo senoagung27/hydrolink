@@ -10,11 +10,11 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { JobCard } from '../../components/JobCard';
 import { ListHeader } from '../../components/ListHeader'; // Import ListHeader
-import SkeletonCard from '../../components/SkeletonCard'; 
+import SkeletonCard from '../../components/SkeletonCard';
 import { ThemedView } from '../../components/ThemedView';
 import { useJob } from '../../context/JobContext';
 import { Job } from '../../types/job';
@@ -24,7 +24,6 @@ const JOBS_PER_PAGE = 3;
 
 export default function HomeScreen() {
   const { jobs, loading: initialLoading } = useJob();
-  const insets = useSafeAreaInsets();
   const router = useRouter();
 
   const [displayedJobs, setDisplayedJobs] = useState<Job[]>([]);
@@ -55,7 +54,7 @@ export default function HomeScreen() {
       setPage(nextPage);
       setAllJobsLoaded(newJobs.length >= jobs.length);
       setLoadingMore(false);
-    }, 1000); 
+    }, 1000);
   }, [page, loadingMore, allJobsLoaded, jobs]);
 
   if (initialLoading) {
@@ -90,7 +89,7 @@ export default function HomeScreen() {
   };
 
   return (
-    <ThemedView style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <FlatList
         ListHeaderComponent={ListHeader}
         data={displayedJobs}
@@ -104,7 +103,7 @@ export default function HomeScreen() {
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
       />
-    </ThemedView>
+    </SafeAreaView>
   );
 }
 

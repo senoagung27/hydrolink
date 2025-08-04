@@ -1,3 +1,5 @@
+// src/app/_layout.tsx
+
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { Stack, useRouter, useSegments } from 'expo-router';
@@ -7,7 +9,7 @@ import { ActivityIndicator, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import 'react-native-reanimated';
 
-import { AuthProvider, useAuth } from '../context/AuthContext'; // <-- Gunakan AuthContext yang benar
+import { AuthProvider, useAuth } from '../context/AuthContext';
 import { JobProvider } from '../context/JobContext';
 import { NotesProvider } from '../context/NotesContext';
 import { useColorScheme } from '../hooks/useColorScheme';
@@ -17,19 +19,25 @@ function RootLayoutNav() {
   const segments = useSegments();
   const router = useRouter();
 
+  // --- PERBAIKI BAGIAN INI ---
   useEffect(() => {
-    if (isLoading) return; // Jangan lakukan apa-apa jika masih loading
+    if (isLoading) {
+      return; // Jangan lakukan apa-apa jika status autentikasi masih dimuat
+    }
 
-    const inTabsGroup = segments[0] === '(tabs)';
+    const inAuthFlow = segments[0] === 'login';
 
-    if (token && !inTabsGroup) {
-      // Arahkan ke home jika pengguna punya token tapi tidak di dalam grup (tabs)
+    if (token && inAuthFlow) {
+      // Pengguna sudah login tapi berada di halaman login,
+      // arahkan ke halaman utama.
       router.replace('/(tabs)');
-    } else if (!token && inTabsGroup) {
-      // Arahkan ke login jika pengguna tidak punya token tapi mencoba akses (tabs)
+    } else if (!token && !inAuthFlow) {
+      // Pengguna belum login dan mencoba mengakses rute terproteksi,
+      // arahkan ke halaman login.
       router.replace('/login');
     }
-  }, [token, isLoading, segments]);
+  }, [token, isLoading, segments, router]);
+  // --- BATAS PERBAIKAN ---
 
   if (isLoading) {
     return (
@@ -41,10 +49,7 @@ function RootLayoutNav() {
 
   return (
     <Stack>
-      {/* Rute yang tidak dilindungi (login) */}
       <Stack.Screen name="login" options={{ headerShown: false }} />
-
-      {/* Rute yang dilindungi (tabs dan detail) */}
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen name="job-detail/job-detail" options={{ title: 'Job Detail' }} />
     </Stack>
@@ -62,7 +67,6 @@ export default function RootLayout() {
   }
 
   return (
-    // Bungkus semua provider di dalam AuthProvider yang benar
     <AuthProvider>
       <JobProvider>
         <NotesProvider>

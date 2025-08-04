@@ -8,22 +8,20 @@ import {
     View,
 } from 'react-native';
 import { ThemedText } from './ThemedText';
+import { useAuth } from '../context/AuthContext'; // Impor useAuth
 
 export const ListHeader = () => {
+    const { logout } = useAuth(); // Panggil hook useAuth untuk mendapatkan fungsi logout
     const getGreeting = () => {
         const currentHour = new Date().getHours();
 
         if (currentHour >= 3 && currentHour < 11) {
-            // Pagi: dari jam 3 pagi sampai sebelum jam 11 siang
             return 'Selamat Pagi';
         } else if (currentHour >= 11 && currentHour < 15) {
-            // Siang: dari jam 11 siang sampai sebelum jam 3 sore
             return 'Selamat Siang';
         } else if (currentHour >= 15 && currentHour < 19) {
-            // Sore: dari jam 3 sore sampai sebelum jam 7 malam
             return 'Selamat Sore';
         } else {
-            // Malam: dari jam 7 malam sampai sebelum jam 3 pagi
             return 'Selamat Malam';
         }
     };
@@ -31,13 +29,20 @@ export const ListHeader = () => {
     const greeting = getGreeting();
 
     return (
-        <>
+        <View>
             <View style={styles.header}>
                 <View>
                     <ThemedText style={styles.greetingText}>{greeting}</ThemedText>
                     <ThemedText style={styles.userNameText}>Seno Agung</ThemedText>
                 </View>
-                <FontAwesome name="user-circle" size={40} style={styles.profileImage}/>
+                <View style={styles.headerRight}>
+                    <View style={styles.profileImageContainer}>
+                        <FontAwesome name="user-circle" size={40} color="#687076" />
+                    </View>
+                    <TouchableOpacity onPress={logout} style={styles.logoutButton}>
+                        <FontAwesome name="sign-out" size={24} color="#687076" />
+                    </TouchableOpacity>
+                </View>
             </View>
             <View style={styles.promoCard}>
                 <View>
@@ -69,7 +74,7 @@ export const ListHeader = () => {
             <View style={styles.recentJobsHeader}>
                 <ThemedText style={styles.sectionTitle}>Recent Job List</ThemedText>
             </View>
-        </>
+        </View>
     );
 };
 
@@ -79,7 +84,12 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        paddingVertical: 10, // Mengurangi padding vertikal
+        paddingVertical: 10,
+    },
+    headerRight: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 10,
     },
     greetingText: {
         fontSize: 25,
@@ -89,16 +99,21 @@ const styles = StyleSheet.create({
         fontSize: 18,
         color: '#687076',
     },
-    profileImage: {
+    profileImageContainer: {
         width: 50,
         height: 50,
         borderRadius: 25,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    logoutButton: {
+        padding: 10,
     },
     promoCard: {
         backgroundColor: '#3D3D71',
         borderRadius: 20,
         padding: 20,
-        marginVertical: 10, // Mengurangi margin vertikal
+        marginVertical: 10,
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
