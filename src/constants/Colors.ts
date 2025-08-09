@@ -1,4 +1,6 @@
-const tintColorLight = '#0a7ea4';
+// src/constants/Colors.ts
+
+const tintColorLight = '#F9774E'; // Changed to orange for active icons
 const tintColorDark = '#fff';
 
 export const Colors = {
@@ -7,7 +9,7 @@ export const Colors = {
     background: '#fff',
     tint: tintColorLight,
     icon: '#687076',
-    tabIconDefault: '#687076',
+    tabIconDefault: '#C4C4DE', // Changed to purplish-grey for inactive icons
     tabIconSelected: tintColorLight,
     // --- Warna Tambahan untuk Mode Terang ---
     screenBackground: '#F8F9FA',

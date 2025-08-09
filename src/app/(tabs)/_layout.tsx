@@ -1,40 +1,78 @@
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+// src/app/(tabs)/_layout.tsx
+import { createBottomTabNavigator, BottomTabBarButtonProps } from '@react-navigation/bottom-tabs';
+import { FontAwesome } from '@expo/vector-icons';
 import React from 'react';
-import { Image, StyleSheet, Platform } from 'react-native';
+import { Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
+
+import { HapticTab } from '../../components/HapticTab';
 import { Colors } from '../../constants/Colors';
 import { useColorScheme } from '../../hooks/useColorScheme';
-import { IconSymbol } from '../../components/ui/IconSymbol';
-import { HapticTab } from '../../components/HapticTab';
-import TabBarBackground from '../../components/ui/TabBarBackground';
 
-// Import your screen components
+// Import all necessary screen components
 import HomeScreen from './index';
 import ExploreScreen from './explore';
 import SavedJobsScreen from './saved-jobs';
-import CardsExampleScreen from './cards-example';
+import AddJobScreen from './add-job';
+import MessagesScreen from './messages';
 
 const Tab = createBottomTabNavigator();
 
+// Custom component for the central "Add" button with corrected styles
+const CustomAddButton = ({ children, onPress }: BottomTabBarButtonProps) => (
+    <TouchableOpacity
+        style={{
+            top: -25,
+            justifyContent: 'center',
+            alignItems: 'center',
+            ...styles.shadow,
+        }}
+        onPress={onPress}
+    >
+        <View
+            style={{
+                width: 56,
+                height: 56,
+                borderRadius: 28,
+                backgroundColor: '#4338CA', // A darker, more accurate purple-blue
+                // Add centering styles to the button itself
+                justifyContent: 'center',
+                alignItems: 'center',
+            }}
+        >
+            {children}
+        </View>
+    </TouchableOpacity>
+);
+
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+  const activeColor = Colors[colorScheme ?? 'light'].tint;
+  const inactiveColor = Colors[colorScheme ?? 'light'].tabIconDefault;
 
   return (
     <Tab.Navigator
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: false,
+        tabBarShowLabel: false,
         tabBarStyle: {
-          backgroundColor: Colors[colorScheme ?? 'light'].tabIconDefault,
+          position: 'absolute',
+          bottom: 20,
+          left: 15,
+          right: 15,
+          backgroundColor: '#ffffff',
+          borderRadius: 15,
+          height: 60,
+          ...styles.shadow,
         },
-        tabBarBackground: () => <TabBarBackground />,
       }}>
       <Tab.Screen
         name="Home"
         component={HomeScreen}
         options={{
-          title: 'Home',
-          tabBarIcon: ({ color, focused }) => (
-            <IconSymbol name={focused ? 'house.fill' : 'house.fill'} color={color} />
+          tabBarIcon: ({ focused }) => (
+            <View style={styles.iconContainer}>
+              <FontAwesome name="home" size={26} color={focused ? activeColor : inactiveColor} />
+            </View>
           ),
           tabBarButton: (props) => <HapticTab {...props} />,
         }}
@@ -43,9 +81,32 @@ export default function TabLayout() {
         name="Explore"
         component={ExploreScreen}
         options={{
-          title: 'Explore',
-          tabBarIcon: ({ color, focused }) => (
-            <IconSymbol name={focused ? 'paperplane.fill' : 'paperplane.fill'} color={color} />
+          tabBarIcon: ({ focused }) => (
+            <View style={styles.iconContainer}>
+              <FontAwesome name="share-alt" size={26} color={focused ? activeColor : inactiveColor} />
+            </View>
+          ),
+          tabBarButton: (props) => <HapticTab {...props} />,
+        }}
+      />
+      <Tab.Screen
+        name="AddJob"
+        component={AddJobScreen}
+        options={{
+          tabBarIcon: () => (
+            <FontAwesome name="plus" size={24} color="#ffffff" />
+          ),
+          tabBarButton: (props) => <CustomAddButton {...props} />,
+        }}
+      />
+      <Tab.Screen
+        name="Messages"
+        component={MessagesScreen}
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <View style={styles.iconContainer}>
+              <FontAwesome name="comment-o" size={26} color={focused ? activeColor : inactiveColor} />
+            </View>
           ),
           tabBarButton: (props) => <HapticTab {...props} />,
         }}
@@ -55,22 +116,10 @@ export default function TabLayout() {
         component={SavedJobsScreen}
         options={{
           title: 'Saved Jobs',
-          tabBarIcon: ({ color, focused }) => (
-            <Image
-              source={require('../../assets/images/favicon.png')}
-              style={{ tintColor: color, width: 24, height: 24 }}
-            />
-          ),
-          tabBarButton: (props) => <HapticTab {...props} />,
-        }}
-      />
-      <Tab.Screen
-        name="CardsExample"
-        component={CardsExampleScreen}
-        options={{
-          title: 'Cards',
-          tabBarIcon: ({ color, focused }) => (
-            <IconSymbol name={focused ? 'chevron.left.forwardslash.chevron.right' : 'chevron.left.forwardslash.chevron.right'} color={color} />
+          tabBarIcon: ({ focused }) => (
+            <View style={styles.iconContainer}>
+                <FontAwesome name="bookmark-o" size={26} color={focused ? activeColor : inactiveColor} />
+            </View>
           ),
           tabBarButton: (props) => <HapticTab {...props} />,
         }}
@@ -78,3 +127,21 @@ export default function TabLayout() {
     </Tab.Navigator>
   );
 }
+
+const styles = StyleSheet.create({
+    shadow: {
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 5,
+        },
+        shadowOpacity: 0.1,
+        shadowRadius: 3.5,
+        elevation: 5,
+    },
+    iconContainer: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        top: Platform.OS === 'ios' ? 5 : 0,
+    }
+});

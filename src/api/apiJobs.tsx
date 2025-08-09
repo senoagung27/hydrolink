@@ -62,3 +62,27 @@ export const updateJobApi = async (job: Job) => {
     return false;
   }
 };
+export const addJob = async (jobData: any) => {
+  try {
+    const response = await fetch(BASE_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(jobData),
+    });
+
+    if (response.ok) {
+      Alert.alert('Success', 'New job has been added successfully.');
+      return await response.json();
+    } else {
+      const errorData = await response.json();
+      Alert.alert('Error', `Failed to add job: ${errorData.message || 'Server error'}`);
+      return null;
+    }
+  } catch (error) {
+    console.error('Error adding job:', error);
+    Alert.alert('Error', 'An error occurred. Please try again.');
+    return null;
+  }
+};

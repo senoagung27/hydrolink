@@ -19,21 +19,15 @@ function RootLayoutNav() {
   const segments = useSegments();
   const router = useRouter();
 
-  // --- PERBAIKI BAGIAN INI ---
   useEffect(() => {
     if (isLoading) {
-      return; // Jangan lakukan apa-apa jika status autentikasi masih dimuat
+      return;
     }
-
     const inAuthFlow = segments[0] === 'login';
 
     if (token && inAuthFlow) {
-      // Pengguna sudah login tapi berada di halaman login,
-      // arahkan ke halaman utama.
       router.replace('/(tabs)');
     } else if (!token && !inAuthFlow) {
-      // Pengguna belum login dan mencoba mengakses rute terproteksi,
-      // arahkan ke halaman login.
       router.replace('/login');
     }
   }, [token, isLoading, segments, router]);
