@@ -3,6 +3,7 @@ import { createBottomTabNavigator, BottomTabBarButtonProps } from '@react-naviga
 import { FontAwesome } from '@expo/vector-icons';
 import React from 'react';
 import { Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { useRouter } from 'expo-router'; // <-- Impor useRouter
 
 import { HapticTab } from '../../components/HapticTab';
 import { Colors } from '../../constants/Colors';
@@ -17,7 +18,6 @@ import MessagesScreen from './messages';
 
 const Tab = createBottomTabNavigator();
 
-// Custom component for the central "Add" button with corrected styles
 const CustomAddButton = ({ children, onPress }: BottomTabBarButtonProps) => (
     <TouchableOpacity
         style={{
@@ -33,8 +33,7 @@ const CustomAddButton = ({ children, onPress }: BottomTabBarButtonProps) => (
                 width: 56,
                 height: 56,
                 borderRadius: 28,
-                backgroundColor: '#4338CA', // A darker, more accurate purple-blue
-                // Add centering styles to the button itself
+                backgroundColor: '#4338CA',
                 justifyContent: 'center',
                 alignItems: 'center',
             }}
@@ -48,6 +47,7 @@ export default function TabLayout() {
   const colorScheme = useColorScheme();
   const activeColor = Colors[colorScheme ?? 'light'].tint;
   const inactiveColor = Colors[colorScheme ?? 'light'].tabIconDefault;
+  const router = useRouter(); // <-- Buat instance router
 
   return (
     <Tab.Navigator
@@ -65,6 +65,7 @@ export default function TabLayout() {
           ...styles.shadow,
         },
       }}>
+      {/* ... (Tab.Screen untuk Home, Explore, Messages, SavedJobs tetap sama) ... */}
       <Tab.Screen
         name="Home"
         component={HomeScreen}
@@ -89,9 +90,17 @@ export default function TabLayout() {
           tabBarButton: (props) => <HapticTab {...props} />,
         }}
       />
+
+      {/* PERBARUI BAGIAN INI */}
       <Tab.Screen
-        name="AddJob"
+        name="add-job" // Sesuaikan nama dengan nama berkas
         component={AddJobScreen}
+        listeners={{
+          tabPress: (e) => {
+            e.preventDefault(); // Mencegah navigasi default
+            router.push('/(tabs)/add-job'); // Buka modal sebagai gantinya
+          },
+        }}
         options={{
           tabBarIcon: () => (
             <FontAwesome name="plus" size={24} color="#ffffff" />
@@ -99,6 +108,7 @@ export default function TabLayout() {
           tabBarButton: (props) => <CustomAddButton {...props} />,
         }}
       />
+      
       <Tab.Screen
         name="Messages"
         component={MessagesScreen}

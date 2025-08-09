@@ -45,6 +45,8 @@ function RootLayoutNav() {
       <Stack.Screen name="login" options={{ headerShown: false }} />
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen name="job-detail/job-detail" options={{ title: 'Job Detail' }} />
+      <Stack.Screen name="select-job-position" options={{ headerShown: false }} />
+      <Stack.Screen name="(tabs)/add-job" options={{ presentation: 'modal', headerShown: false }} />
     </Stack>
   );
 }
