@@ -1,6 +1,6 @@
 // src/app/(tabs)/add-job.tsx
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import React, { useLayoutEffect, useState, useCallback, useEffect, useRef } from 'react';
+import React, { useLayoutEffect, useState, useCallback, useEffect } from 'react';
 import {
     ActivityIndicator,
     Alert,
@@ -15,7 +15,7 @@ import { useNavigation } from '@react-navigation/native';
 
 import { addJob } from '../../api/apiJobs';
 import { AddJobRow } from '../../components/AddJobRow';
-import { WorkplaceTypeModal } from '../../components/WorkplaceTypeModal'; // Import modal
+import { WorkplaceTypeModal } from '../../components/WorkplaceTypeModal';
 import { useJob } from '../../context/JobContext';
 
 export default function AddJobScreen() {
@@ -35,36 +35,30 @@ export default function AddJobScreen() {
         description: '',
     });
 
-    const jobDetailsRef = useRef(jobDetails);
-    useEffect(() => {
-        jobDetailsRef.current = jobDetails;
-    }, [jobDetails]);
-     
-    const handleUpdateDetail = useCallback((key: keyof typeof jobDetails, value: string) => {
-        setJobDetails(prev => ({ ...prev, [key]: value }));
-    }, []);
-     
+    // FIX: Changed useEffect dependency from [params] to [params.field_key, params.field_value]
     useEffect(() => {
         const { field_key, field_value } = params;
-        if (typeof field_key === 'string' && typeof field_value === 'string' && Object.keys(jobDetails).includes(field_key)) {
-            handleUpdateDetail(field_key as keyof typeof jobDetails, field_value);
+        if (typeof field_key === 'string' && typeof field_value === 'string' && field_key in jobDetails) {
+            setJobDetails(prevDetails => ({
+                ...prevDetails,
+                [field_key]: field_value,
+            }));
         }
-    }, [params, handleUpdateDetail]);
+    }, [params.field_key, params.field_value]);
 
     const handlePostJob = useCallback(async () => {
-        const currentJobDetails = jobDetailsRef.current; 
-        if (!currentJobDetails.job_position) {
+        if (!jobDetails.job_position) {
             Alert.alert('Incomplete Form', 'Job Position is required (*).');
             return;
         }
 
         setLoading(true);
         const newJobData = {
-            title: currentJobDetails.job_position,
-            company: currentJobDetails.company || 'Not specified',
-            job_type: currentJobDetails.employment_type || 'Full-Time',
-            location: currentJobDetails.job_location || 'Remote',
-            description: currentJobDetails.description || 'No description provided.',
+            title: jobDetails.job_position,
+            company: jobDetails.company || 'Not specified',
+            job_type: jobDetails.employment_type || 'Full-Time',
+            location: jobDetails.job_location || 'Remote',
+            description: jobDetails.description || 'No description provided.',
             requirements: ["Minimum 2 years of experience in a similar role."],
             salary: "$55,000 - $70,000",
             facilities: ["Medical Insurance", "Paid Time Off"],
@@ -81,7 +75,7 @@ export default function AddJobScreen() {
                 router.back();
             }
         }
-    }, [refetchJobs, router]);
+    }, [refetchJobs, router, jobDetails]);
 
     const headerLeft = useCallback(() => (
         <TouchableOpacity onPress={() => router.back()} style={styles.closeButton}>
@@ -102,7 +96,7 @@ export default function AddJobScreen() {
     useLayoutEffect(() => {
         navigation.setOptions({
             headerShown: true,
-            headerTitle: '', 
+            headerTitle: '',
             headerLeft,
             headerRight,
             headerStyle: {
@@ -116,10 +110,13 @@ export default function AddJobScreen() {
 
     const handleFieldPress = (field: keyof typeof jobDetails, title: string) => {
         const currentParams = { field_key: field };
-         
+
         switch (field) {
             case 'job_position':
                 router.push({ pathname: '/select-job-position', params: currentParams });
+                break;
+            case 'job_location':
+                router.push({ pathname: '/select-location', params: currentParams });
                 break;
             case 'company':
                 router.push({ pathname: '/select-company' as any, params: currentParams });
@@ -136,7 +133,9 @@ export default function AddJobScreen() {
                         {
                             text: 'OK',
                             onPress: (text) => {
-                                if (text) handleUpdateDetail(field, text);
+                                if (text) {
+                                    setJobDetails(prev => ({...prev, [field]: text}));
+                                }
                             }
                         },
                     ],
@@ -189,7 +188,7 @@ export default function AddJobScreen() {
                onClose={() => setWorkplaceModalVisible(false)}
                currentValue={jobDetails.workplace_type}
                onSelect={(value) => {
-                   handleUpdateDetail('workplace_type', value);
+                   setJobDetails(prev => ({...prev, workplace_type: value}));
                }}
            />
         </SafeAreaView>

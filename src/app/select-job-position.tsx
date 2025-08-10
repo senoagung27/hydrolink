@@ -38,8 +38,7 @@ export default function SelectJobPositionScreen() {
   const handleSelect = (position: string) => {
     if (typeof field_key !== 'string') return;
     
-    // GUNAKAN ROUTER.REPLACE UNTUK KEMBALI
-    router.replace({
+    router.navigate({
       pathname: '/(tabs)/add-job',
       params: { field_key, field_value: position },
     });
