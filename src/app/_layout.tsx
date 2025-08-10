@@ -13,6 +13,7 @@ import { AuthProvider, useAuth } from '../context/AuthContext';
 import { JobProvider } from '../context/JobContext';
 import { NotesProvider } from '../context/NotesContext';
 import { useColorScheme } from '../hooks/useColorScheme';
+import { AddJobProvider } from '../context/AddJobContext';
 
 function RootLayoutNav() {
   const { token, isLoading } = useAuth();
@@ -47,6 +48,7 @@ function RootLayoutNav() {
       <Stack.Screen name="job-detail/job-detail" options={{ title: 'Job Detail' }} />
       <Stack.Screen name="select-job-position" options={{ headerShown: false }} />
       <Stack.Screen name="select-location" options={{ headerShown: false }} />
+      <Stack.Screen name="select-company" options={{ headerShown: false }} />
       <Stack.Screen name="(tabs)/add-job" options={{ presentation: 'modal', headerShown: false }} />
     </Stack>
   );
@@ -66,12 +68,14 @@ export default function RootLayout() {
     <AuthProvider>
       <JobProvider>
         <NotesProvider>
-          <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-            <SafeAreaProvider>
-              <RootLayoutNav />
-              <StatusBar style="auto" />
-            </SafeAreaProvider>
-          </ThemeProvider>
+          <AddJobProvider>
+            <ThemeProvider value={colorScheme === 'dark' ? DefaultTheme : DarkTheme}>
+              <SafeAreaProvider>
+                <RootLayoutNav />
+                <StatusBar style="auto" />
+              </SafeAreaProvider>
+            </ThemeProvider>
+          </AddJobProvider>
         </NotesProvider>
       </JobProvider>
     </AuthProvider>

@@ -1,6 +1,6 @@
 // src/app/(tabs)/add-job.tsx
-import { useRouter, useLocalSearchParams } from 'expo-router';
-import React, { useLayoutEffect, useState, useCallback, useEffect } from 'react';
+import { useRouter } from 'expo-router';
+import React, { useCallback, useLayoutEffect, useState, useRef, useEffect } from 'react';
 import {
     ActivityIndicator,
     Alert,
@@ -17,34 +17,16 @@ import { addJob } from '../../api/apiJobs';
 import { AddJobRow } from '../../components/AddJobRow';
 import { WorkplaceTypeModal } from '../../components/WorkplaceTypeModal';
 import { useJob } from '../../context/JobContext';
+import { useAddJob } from '../../context/AddJobContext'; // <-- Impor hook konteks
 
 export default function AddJobScreen() {
     const router = useRouter();
     const navigation = useNavigation();
-    const params = useLocalSearchParams();
     const { refetchJobs } = useJob();
+    const { jobDetails, setJobDetail, resetJobDetails } = useAddJob(); // <-- Gunakan state dari konteks
+
     const [loading, setLoading] = useState(false);
     const [isWorkplaceModalVisible, setWorkplaceModalVisible] = useState(false);
-
-    const [jobDetails, setJobDetails] = useState({
-        job_position: '',
-        workplace_type: '',
-        job_location: '',
-        company: '',
-        employment_type: '',
-        description: '',
-    });
-
-    // FIX: Changed useEffect dependency from [params] to [params.field_key, params.field_value]
-    useEffect(() => {
-        const { field_key, field_value } = params;
-        if (typeof field_key === 'string' && typeof field_value === 'string' && field_key in jobDetails) {
-            setJobDetails(prevDetails => ({
-                ...prevDetails,
-                [field_key]: field_value,
-            }));
-        }
-    }, [params.field_key, params.field_value]);
 
     const handlePostJob = useCallback(async () => {
         if (!jobDetails.job_position) {
@@ -71,11 +53,17 @@ export default function AddJobScreen() {
 
         if (result) {
             await refetchJobs();
+            resetJobDetails(); // <-- Reset form setelah berhasil
             if (router.canGoBack()) {
                 router.back();
             }
         }
-    }, [refetchJobs, router, jobDetails]);
+    }, [refetchJobs, router, jobDetails, resetJobDetails]);
+    
+    const handlePostJobRef = useRef(handlePostJob);
+    useEffect(() => {
+        handlePostJobRef.current = handlePostJob;
+    });
 
     const headerLeft = useCallback(() => (
         <TouchableOpacity onPress={() => router.back()} style={styles.closeButton}>
@@ -87,11 +75,11 @@ export default function AddJobScreen() {
         loading ? (
             <ActivityIndicator style={{ marginRight: 15 }} color="#F9774E" />
         ) : (
-            <TouchableOpacity onPress={handlePostJob} style={styles.postButton}>
+            <TouchableOpacity onPress={() => handlePostJobRef.current()} style={styles.postButton}>
                 <Text style={styles.postButtonText}>Post</Text>
             </TouchableOpacity>
         )
-    ), [loading, handlePostJob]);
+    ), [loading]);
 
     useLayoutEffect(() => {
         navigation.setOptions({
@@ -108,20 +96,19 @@ export default function AddJobScreen() {
         });
     }, [navigation, headerLeft, headerRight]);
 
-    const handleFieldPress = (field: keyof typeof jobDetails, title: string) => {
-        const currentParams = { field_key: field };
 
+    const handleFieldPress = (field: keyof typeof jobDetails, title: string) => {
         switch (field) {
             case 'job_position':
-                router.push({ pathname: '/select-job-position', params: currentParams });
+                router.push('/select-job-position');
                 break;
             case 'job_location':
-                router.push({ pathname: '/select-location', params: currentParams });
+                router.push('/select-location');
                 break;
             case 'company':
-                router.push({ pathname: '/select-company' as any, params: currentParams });
+               router.push('/select-company');
                 break;
-           case 'workplace_type':
+            case 'workplace_type':
                setWorkplaceModalVisible(true);
                break;
             default:
@@ -134,7 +121,7 @@ export default function AddJobScreen() {
                             text: 'OK',
                             onPress: (text) => {
                                 if (text) {
-                                    setJobDetails(prev => ({...prev, [field]: text}));
+                                    setJobDetail(field, text); // <-- Gunakan setJobDetail dari konteks
                                 }
                             }
                         },
@@ -188,7 +175,7 @@ export default function AddJobScreen() {
                onClose={() => setWorkplaceModalVisible(false)}
                currentValue={jobDetails.workplace_type}
                onSelect={(value) => {
-                   setJobDetails(prev => ({...prev, workplace_type: value}));
+                   setJobDetail('workplace_type', value); // <-- Gunakan setJobDetail dari konteks
                }}
            />
         </SafeAreaView>

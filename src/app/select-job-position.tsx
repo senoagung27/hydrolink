@@ -1,6 +1,6 @@
 // src/app/select-job-position.tsx
 
-import { useRouter, useLocalSearchParams } from 'expo-router';
+import { useRouter } from 'expo-router';
 import React, { useState, useMemo } from 'react';
 import {
   View,
@@ -12,36 +12,23 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FontAwesome } from '@expo/vector-icons';
+import { useAddJob } from '../context/AddJobContext'; // <-- Impor hook konteks
 
-// Data posisi pekerjaan (bisa juga dari API)
 const JOB_POSITIONS = [
-  'Assistant',
-  'Associate',
-  'Administrative Assistant',
-  'Account Manager',
-  'Assistant Manager',
-  'Commission Sales Associate',
-  'Sales Attendant',
-  'Accountant',
-  'Sales Advocate',
-  'Analyst',
-  'UI/UX Designer',
-  'Software Engineer',
-  'Product Manager',
+  'Assistant', 'Associate', 'Administrative Assistant', 'Account Manager', 
+  'Assistant Manager', 'Commission Sales Associate', 'Sales Attendant', 
+  'Accountant', 'Sales Advocate', 'Analyst', 'UI/UX Designer', 
+  'Software Engineer', 'Product Manager',
 ];
 
 export default function SelectJobPositionScreen() {
   const router = useRouter();
-  const { field_key } = useLocalSearchParams();
+  const { setJobDetail } = useAddJob(); // <-- Dapatkan fungsi dari konteks
   const [searchQuery, setSearchQuery] = useState('');
 
   const handleSelect = (position: string) => {
-    if (typeof field_key !== 'string') return;
-    
-    router.navigate({
-      pathname: '/(tabs)/add-job',
-      params: { field_key, field_value: position },
-    });
+    setJobDetail('job_position', position); // <-- Perbarui state di konteks
+    router.back(); // <-- Kembali ke layar sebelumnya
   };
 
   const filteredPositions = useMemo(() =>

@@ -1,5 +1,3 @@
-// src/app/select-location.tsx
-
 import { FontAwesome } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useMemo, useState } from 'react';
@@ -12,23 +10,23 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { LOCATIONS } from '../constants/locations';
-import { useAddJob } from '../context/AddJobContext'; // <-- Impor hook konteks
+import { useAddJob } from '../context/AddJobContext';
+import { COMPANIES } from '../constants/companies';
 
-export default function SelectLocationScreen() {
+export default function SelectCompanyScreen() {
   const router = useRouter();
-  const { setJobDetail } = useAddJob(); // <-- Dapatkan fungsi dari konteks
+  const { setJobDetail } = useAddJob();
   const [searchQuery, setSearchQuery] = useState('');
 
-  const handleSelect = (location: string) => {
-    setJobDetail('job_location', location); // <-- Perbarui state di konteks
-    router.back(); // <-- Kembali ke layar sebelumnya
+  const handleSelect = (companyName: string) => {
+    setJobDetail('company', companyName);
+    router.back();
   };
 
-  const filteredLocations = useMemo(
+  const filteredCompanies = useMemo(
     () =>
-      LOCATIONS.filter((item) =>
-        item.toLowerCase().includes(searchQuery.toLowerCase())
+      COMPANIES.filter((item) =>
+        item.name.toLowerCase().includes(searchQuery.toLowerCase())
       ),
     [searchQuery]
   );
@@ -39,7 +37,7 @@ export default function SelectLocationScreen() {
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
           <FontAwesome name="arrow-left" size={20} color="#1E1E2D" />
         </TouchableOpacity>
-        <Text style={styles.title}>Location</Text>
+        <Text style={styles.title}>Company</Text>
       </View>
 
       <View style={styles.searchContainer}>
@@ -50,7 +48,7 @@ export default function SelectLocationScreen() {
           style={styles.searchIcon}
         />
         <TextInput
-          placeholder="Search for a location"
+          placeholder="Search for a company"
           style={styles.searchInput}
           value={searchQuery}
           onChangeText={setSearchQuery}
@@ -64,11 +62,20 @@ export default function SelectLocationScreen() {
       </View>
 
       <FlatList
-        data={filteredLocations}
-        keyExtractor={(item) => item}
+        data={filteredCompanies}
+        keyExtractor={(item) => item.name}
         renderItem={({ item }) => (
-          <TouchableOpacity style={styles.item} onPress={() => handleSelect(item)}>
-            <Text style={styles.itemText}>{item}</Text>
+          <TouchableOpacity style={styles.item} onPress={() => handleSelect(item.name)}>
+            <FontAwesome
+              name={item.logo as any}
+              size={24}
+              color={item.color}
+              style={styles.logoIcon}
+            />
+            <View style={styles.companyContainer}>
+                <Text style={styles.companyName}>{item.name}</Text>
+                <Text style={styles.companyCategory}>{`${item.type} · ${item.category}`}</Text>
+            </View>
           </TouchableOpacity>
         )}
       />
@@ -108,19 +115,35 @@ const styles = StyleSheet.create({
   searchIcon: {
     marginRight: 10,
   },
+  logoIcon: {
+    marginRight: 15,
+    width: 24, // Menjamin lebar ikon konsisten
+    textAlign: 'center',
+  },
   searchInput: {
     flex: 1,
     height: 50,
     fontSize: 16,
   },
   item: {
-    paddingVertical: 18,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
     paddingHorizontal: 25,
     borderBottomWidth: 1,
     borderBottomColor: '#F0F0F0',
   },
-  itemText: {
-    fontSize: 16,
-    color: '#333',
+  companyContainer: {
+    flexDirection: 'column',
   },
+  companyName: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#1E1E2D',
+  },
+  companyCategory: {
+      fontSize: 14,
+      color: '#687076',
+      marginTop: 2,
+  }
 });
