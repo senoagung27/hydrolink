@@ -16,17 +16,19 @@ import { useNavigation } from '@react-navigation/native';
 import { addJob } from '../../api/apiJobs';
 import { AddJobRow } from '../../components/AddJobRow';
 import { WorkplaceTypeModal } from '../../components/WorkplaceTypeModal';
+import { EmploymentTypeModal } from '../../components/EmploymentTypeModal';
 import { useJob } from '../../context/JobContext';
-import { useAddJob } from '../../context/AddJobContext'; // <-- Impor hook konteks
+import { useAddJob } from '../../context/AddJobContext';
 
 export default function AddJobScreen() {
     const router = useRouter();
     const navigation = useNavigation();
     const { refetchJobs } = useJob();
-    const { jobDetails, setJobDetail, resetJobDetails } = useAddJob(); // <-- Gunakan state dari konteks
+    const { jobDetails, setJobDetail, resetJobDetails } = useAddJob();
 
     const [loading, setLoading] = useState(false);
     const [isWorkplaceModalVisible, setWorkplaceModalVisible] = useState(false);
+    const [isEmploymentModalVisible, setEmploymentModalVisible] = useState(false);
 
     const handlePostJob = useCallback(async () => {
         if (!jobDetails.job_position) {
@@ -53,7 +55,7 @@ export default function AddJobScreen() {
 
         if (result) {
             await refetchJobs();
-            resetJobDetails(); // <-- Reset form setelah berhasil
+            resetJobDetails();
             if (router.canGoBack()) {
                 router.back();
             }
@@ -96,39 +98,25 @@ export default function AddJobScreen() {
         });
     }, [navigation, headerLeft, headerRight]);
 
-
-    const handleFieldPress = (field: keyof typeof jobDetails, title: string) => {
+    const handleFieldPress = (field: keyof typeof jobDetails) => {
         switch (field) {
             case 'job_position':
                 router.push('/select-job-position');
                 break;
+            case 'workplace_type':
+               setWorkplaceModalVisible(true);
+               break;
             case 'job_location':
                 router.push('/select-location');
                 break;
             case 'company':
                router.push('/select-company');
                 break;
-            case 'workplace_type':
-               setWorkplaceModalVisible(true);
+            case 'employment_type':
+               setEmploymentModalVisible(true);
                break;
-            default:
-                Alert.prompt(
-                    `Enter ${title}`,
-                    `Please provide a value for ${title}.`,
-                    [
-                        { text: 'Cancel', style: 'cancel' },
-                        {
-                            text: 'OK',
-                            onPress: (text) => {
-                                if (text) {
-                                    setJobDetail(field, text); // <-- Gunakan setJobDetail dari konteks
-                                }
-                            }
-                        },
-                    ],
-                    'plain-text',
-                    jobDetails[field]
-                );
+            case 'description':
+                router.push('/add-job-description'); // <-- Navigasi ke halaman deskripsi
                 break;
         }
     };
@@ -141,32 +129,32 @@ export default function AddJobScreen() {
                 <AddJobRow
                     label="Job position*"
                     value={jobDetails.job_position}
-                    onPress={() => handleFieldPress('job_position', 'Job Position')}
+                    onPress={() => handleFieldPress('job_position')}
                 />
                 <AddJobRow
                     label="Type of workplace"
                     value={jobDetails.workplace_type}
-                    onPress={() => handleFieldPress('workplace_type', 'Workplace Type')}
+                    onPress={() => handleFieldPress('workplace_type')}
                 />
                 <AddJobRow
                     label="Job location"
                     value={jobDetails.job_location}
-                    onPress={() => handleFieldPress('job_location', 'Job Location')}
+                    onPress={() => handleFieldPress('job_location')}
                 />
                 <AddJobRow
                     label="Company"
                     value={jobDetails.company}
-                    onPress={() => handleFieldPress('company', 'Company')}
+                    onPress={() => handleFieldPress('company')}
                 />
                 <AddJobRow
                     label="Employment type"
                     value={jobDetails.employment_type}
-                    onPress={() => handleFieldPress('employment_type', 'Employment Type')}
+                    onPress={() => handleFieldPress('employment_type')}
                 />
                 <AddJobRow
                     label="Description"
                     value={jobDetails.description}
-                    onPress={() => handleFieldPress('description', 'Description')}
+                    onPress={() => handleFieldPress('description')}
                 />
             </ScrollView>
 
@@ -175,7 +163,16 @@ export default function AddJobScreen() {
                onClose={() => setWorkplaceModalVisible(false)}
                currentValue={jobDetails.workplace_type}
                onSelect={(value) => {
-                   setJobDetail('workplace_type', value); // <-- Gunakan setJobDetail dari konteks
+                   setJobDetail('workplace_type', value);
+               }}
+           />
+
+           <EmploymentTypeModal
+               visible={isEmploymentModalVisible}
+               onClose={() => setEmploymentModalVisible(false)}
+               currentValue={jobDetails.employment_type}
+               onSelect={(value) => {
+                   setJobDetail('employment_type', value);
                }}
            />
         </SafeAreaView>

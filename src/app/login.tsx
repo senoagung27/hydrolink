@@ -1,4 +1,6 @@
 // src/app/login.tsx
+import { FontAwesome } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -16,6 +18,7 @@ export default function LoginScreen() {
     const [password, setPassword] = useState('emilyspass'); // Password yang valid
     const [rememberMe, setRememberMe] = useState(false);
     const { login } = useAuth();
+    const router = useRouter(); // <-- Impor dan gunakan useRouter
 
     const handleLogin = async () => {
         try {
@@ -40,6 +43,11 @@ export default function LoginScreen() {
 
     return (
       <SafeAreaView style={styles.container}>
+        {/* Tombol Kembali */}
+        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+            <FontAwesome name="arrow-left" size={20} color="#1E1E2D" />
+        </TouchableOpacity>
+
         <Header
           title="Welcome Back"
           subtitle="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor"
@@ -47,8 +55,8 @@ export default function LoginScreen() {
 
         <View style={styles.form}>
           <FormInput
-            label="Username" // Label diubah menjadi Username
-            placeholder="emilys" // Placeholder diubah
+            label="Username"
+            placeholder="emilys"
             value={username}
             onChangeText={setUsername}
             autoCapitalize="none"
@@ -97,10 +105,17 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#F8F9FA',
         paddingHorizontal: 20,
-        paddingTop: 50,
+    },
+    backButton: {
+        position: 'absolute',
+        top: 60,
+        left: 20,
+        zIndex: 1,
+        padding: 10,
     },
     form: {
         width: '100%',
+        marginTop: 50, // Menambahkan margin untuk memberi ruang pada tombol back
     },
     optionsContainer: {
         flexDirection: 'row',
