@@ -43,7 +43,6 @@ export default function LoginScreen() {
 
     return (
       <SafeAreaView style={styles.container}>
-        {/* Tombol Kembali */}
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
             <FontAwesome name="arrow-left" size={20} color="#1E1E2D" />
         </TouchableOpacity>

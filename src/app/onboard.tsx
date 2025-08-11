@@ -14,7 +14,6 @@ export default function OnboardScreen() {
                 <Text style={styles.headerText}>Jobspot</Text>
             </View>
             <View style={styles.content}>
-                {/* Menggunakan komponen SVG yang diimpor */}
                 <IconSplashscreen width={300} height={300} style={styles.image} />
                 <Text style={styles.title}>
                     Find Your <Text style={styles.titleHighlight}>Dream Job</Text> Here!
