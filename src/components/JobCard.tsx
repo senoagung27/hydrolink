@@ -9,7 +9,7 @@ import { Job, JobCardProps } from '../types/job';
 import { ConfirmDeleteModal } from './ConfirmDeleteModal';
 import { ThemedText } from './ThemedText';
 
-// Hapus onUpdate dari props yang di-destructure
+// Kita hanya perlu 'job' dan 'onDelete' seperti perbaikan sebelumnya
 export const JobCard = ({ job, onDelete }: JobCardProps) => {
   const [optionsModalVisible, setOptionsModalVisible] = useState(false);
   const [confirmDeleteVisible, setConfirmDeleteVisible] = useState(false);
@@ -34,19 +34,26 @@ export const JobCard = ({ job, onDelete }: JobCardProps) => {
     <>
       <View style={styles.card}>
         <View style={styles.cardHeader}>
+          {/* Bagian Info (Logo & Teks) */}
           <View style={styles.companyInfo}>
             <View style={[styles.logoContainer, { backgroundColor: job.logoBackgroundColor }]}>
               <FontAwesome name={job.logo as any} size={24} color={job.logoColor} />
             </View>
-            <View>
-              <ThemedText style={styles.jobTitle}>{job.title}</ThemedText>
-              <ThemedText style={styles.companyLocation}>{job.company} &middot; {job.location}</ThemedText>
+            <View style={styles.textContainer}>
+              <ThemedText style={styles.jobTitle} numberOfLines={1} ellipsizeMode="tail">
+                {job.title}
+              </ThemedText>
+              <ThemedText style={styles.companyLocation} numberOfLines={1} ellipsizeMode="tail">
+                {job.company} &middot; {job.location}
+              </ThemedText>
             </View>
           </View>
-          <TouchableOpacity onPress={() => setOptionsModalVisible(true)}>
+          <TouchableOpacity onPress={() => setOptionsModalVisible(true)} style={styles.ellipsisButton}>
             <FontAwesome name="ellipsis-v" size={20} color={Colors.light.icon} />
           </TouchableOpacity>
         </View>
+
+        {/* Konten Kartu Lainnya */}
         <View style={styles.tagsContainer}>
           {job.tags?.map((tag, index) => (
             <View key={index} style={styles.tag}><Text style={styles.tagText}>{tag}</Text></View>
@@ -76,27 +83,74 @@ export const JobCard = ({ job, onDelete }: JobCardProps) => {
           </View>
         </TouchableWithoutFeedback>
       </Modal>
-
-      <ConfirmDeleteModal visible={confirmDeleteVisible} onClose={() => setConfirmDeleteVisible(false)} onConfirm={confirmDelete} title="Hapus Pekerjaan" message="Apakah Anda yakin ingin menghapus pekerjaan ini?" />
+      <ConfirmDeleteModal 
+        visible={confirmDeleteVisible} 
+        onClose={() => setConfirmDeleteVisible(false)} 
+        onConfirm={confirmDelete} 
+        title="Hapus Pekerjaan" 
+        message="Apakah Anda yakin ingin menghapus pekerjaan ini?" 
+      />
     </>
   );
 };
 
+// --- STYLES DENGAN PERBAIKAN TATA LETAK ---
 const styles = StyleSheet.create({
-  card: { backgroundColor: Colors.light.cardBackground, borderRadius: 20, padding: 20, marginBottom: 16, shadowColor: '#171717', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.07, shadowRadius: 10, elevation: 3 },
-  cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
-  companyInfo: { flexDirection: 'row', alignItems: 'center', gap: 16 },
-  logoContainer: { width: 48, height: 48, borderRadius: 12, justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: '#F0F0F0' },
-  jobTitle: { fontSize: 16, fontWeight: '600' },
-  companyLocation: { fontSize: 14, color: Colors.light.icon, marginTop: 4 },
-  tagsContainer: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 20 },
-  tag: { backgroundColor: Colors.light.tagBackground, borderRadius: 6, paddingVertical: 6, paddingHorizontal: 12 },
-  tagText: { color: Colors.light.tagText, fontWeight: '500', fontSize: 12 },
-  cardFooter: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 20 },
-  postedText: { fontSize: 13, color: Colors.light.icon },
-  salaryText: { fontSize: 16, fontWeight: 'bold' },
-  modalOverlay: { flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0, 0, 0, 0.5)' },
-  modalContent: { backgroundColor: 'white', padding: 20, borderTopLeftRadius: 20, borderTopRightRadius: 20, paddingBottom: 40 },
-  modalOption: { flexDirection: 'row', alignItems: 'center', paddingVertical: 15 },
-  modalOptionText: { marginLeft: 15, fontSize: 16, color: '#1E1E2D' },
+    card: { 
+      backgroundColor: Colors.light.cardBackground, 
+      borderRadius: 20, 
+      padding: 20, 
+      marginBottom: 16, 
+      shadowColor: '#171717', 
+      shadowOffset: { width: 0, height: 4 }, 
+      shadowOpacity: 0.07, 
+      shadowRadius: 10, 
+      elevation: 3 
+    },
+    cardHeader: { 
+      flexDirection: 'row', 
+      justifyContent: 'space-between', 
+      alignItems: 'flex-start',
+      gap: 8, // Menambah jarak antar elemen header
+    },
+    companyInfo: { 
+      flexDirection: 'row', 
+      alignItems: 'center', 
+      gap: 16,
+      flex: 1, // Penting: Membuat bagian ini mengisi ruang yang tersedia
+    },
+    logoContainer: { 
+      width: 48, 
+      height: 48, 
+      borderRadius: 12, 
+      justifyContent: 'center', 
+      alignItems: 'center', 
+      borderWidth: 1, 
+      borderColor: '#F0F0F0' 
+    },
+    textContainer: {
+      flex: 1, // Penting: Membuat container teks fleksibel
+    },
+    jobTitle: { 
+      fontSize: 16, 
+      fontWeight: '600' 
+    },
+    companyLocation: { 
+      fontSize: 14, 
+      color: Colors.light.icon, 
+      marginTop: 4 
+    },
+    ellipsisButton: {
+      paddingLeft: 10, // Memberi area sentuh yang lebih baik
+    },
+    tagsContainer: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 20 },
+    tag: { backgroundColor: Colors.light.tagBackground, borderRadius: 6, paddingVertical: 6, paddingHorizontal: 12 },
+    tagText: { color: Colors.light.tagText, fontWeight: '500', fontSize: 12 },
+    cardFooter: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 20 },
+    postedText: { fontSize: 13, color: Colors.light.icon },
+    salaryText: { fontSize: 16, fontWeight: 'bold' },
+    modalOverlay: { flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0, 0, 0, 0.5)' },
+    modalContent: { backgroundColor: 'white', padding: 20, borderTopLeftRadius: 20, borderTopRightRadius: 20, paddingBottom: 40 },
+    modalOption: { flexDirection: 'row', alignItems: 'center', paddingVertical: 15 },
+    modalOptionText: { marginLeft: 15, fontSize: 16, color: '#1E1E2D' },
 });
