@@ -11,7 +11,7 @@ export const mapApiDataToJob = (apiJob: any): Job => {
         logoInfo = { logo: 'google', logoColor: '#4285F4', logoBackgroundColor: '#FFFFFF' };
     } else if (companyName.includes('dribbble')) {
         logoInfo = { logo: 'dribbble', logoColor: '#EA4C89', logoBackgroundColor: '#FCEEF5' };
-    } else if (companyName.includes('twitter')) {
+    } else if (companyName.includes('twitter') || companyName.includes('x corp')) {
         logoInfo = { logo: 'twitter', logoColor: '#1DA1F2', logoBackgroundColor: '#E7F5FE' };
     }
     const formatDateAgo = (dateString: string) => {
@@ -31,6 +31,7 @@ export const mapApiDataToJob = (apiJob: any): Job => {
         posted: formatDateAgo(apiJob.createdAt),
         salary: apiJob.salary,
         ...logoInfo,
+        logoUrl: apiJob.logo,
         description: apiJob.description,
         requirements: apiJob.requirements,
         facilities: apiJob.facilities,
@@ -39,5 +40,6 @@ export const mapApiDataToJob = (apiJob: any): Job => {
         position: apiJob.position,
         job_type: apiJob.job_type,
         specialization: apiJob.specialization,
+        workplace_type: apiJob.workplace_type,
     };
 };

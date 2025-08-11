@@ -1,3 +1,4 @@
+// src/app/_layout.tsx
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { Stack, useRouter, useSegments } from 'expo-router';
@@ -11,7 +12,7 @@ import { JobProvider } from '../context/JobContext';
 import { NotesProvider } from '../context/NotesContext';
 import { useColorScheme } from '../hooks/useColorScheme';
 import { AddJobProvider } from '../context/AddJobContext';
-import SplashScreen from './screens/SplashScreen'; // <-- Impor SplashScreen
+import SplashScreen from './screens/SplashScreen';
 
 function RootLayoutNav() {
   const { token, isLoading } = useAuth();
@@ -20,37 +21,20 @@ function RootLayoutNav() {
   const [isAppReady, setIsAppReady] = useState(false);
 
   useEffect(() => {
-    // Tampilkan splash screen selama minimal 2 detik
     if (!isLoading) {
-      const timer = setTimeout(() => {
-        setIsAppReady(true);
-      }, 2000); // Durasi splash screen (2000 ms = 2 detik)
-      
-      // Bersihkan timer jika komponen unmount
+      const timer = setTimeout(() => setIsAppReady(true), 2000);
       return () => clearTimeout(timer);
     }
   }, [isLoading]);
 
   useEffect(() => {
-    // Jangan lakukan navigasi jika proses auth masih berjalan atau splash screen masih aktif
-    if (isLoading || !isAppReady) {
-      return;
-    }
-    
+    if (isLoading || !isAppReady) return;
     const inAuthFlow = segments[0] === 'login' || segments[0] === 'onboard';
-
-    // Arahkan pengguna berdasarkan status token
-    if (token && inAuthFlow) {
-      router.replace('/(tabs)');
-    } else if (!token && !inAuthFlow) {
-      router.replace('/onboard');
-    }
+    if (token && inAuthFlow) router.replace('/(tabs)');
+    else if (!token && !inAuthFlow) router.replace('/onboard');
   }, [token, isLoading, isAppReady, segments, router]);
 
-  // Tampilkan SplashScreen hingga aplikasi siap atau proses loading auth selesai
-  if (!isAppReady || isLoading) {
-    return <SplashScreen />;
-  }
+  if (!isAppReady || isLoading) return <SplashScreen />;
 
   return (
     <Stack>
@@ -63,6 +47,7 @@ function RootLayoutNav() {
       <Stack.Screen name="select-company" options={{ headerShown: false }} />
       <Stack.Screen name="add-job-description" options={{ headerShown: false }} />
       <Stack.Screen name="(tabs)/add-job" options={{ presentation: 'modal', headerShown: false }} />
+      <Stack.Screen name="edit-job" options={{ headerShown: false }} />
     </Stack>
   );
 }
@@ -73,9 +58,7 @@ export default function RootLayout() {
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
 
-  if (!loaded) {
-    return null;
-  }
+  if (!loaded) return null;
 
   return (
     <AuthProvider>
