@@ -1,6 +1,6 @@
 // src/components/ListHeader.tsx
 import { FontAwesome } from '@expo/vector-icons';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Image,
     StyleSheet,
@@ -9,13 +9,36 @@ import {
     View,
 } from 'react-native';
 import { ThemedText } from './ThemedText';
-import { useAuth } from '../context/AuthContext'; // Impor useAuth
+import { useAuth } from '../context/AuthContext'; 
+import { User } from '../types/user'; 
 
 export const ListHeader = () => {
-    const { logout } = useAuth(); // Panggil hook useAuth untuk mendapatkan fungsi logout
+    const { token } = useAuth(); 
+    const [user, setUser] = useState<User | null>(null);
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            if (!token) return;
+            try {
+                const response = await fetch('https://dummyjson.com/auth/me', {
+                    method: 'GET',
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    setUser(data);
+                }
+            } catch (error) {
+                console.error("Failed to fetch user:", error);
+            }
+        };
+        fetchUser();
+    }, [token]);
+
     const getGreeting = () => {
         const currentHour = new Date().getHours();
-
         if (currentHour >= 3 && currentHour < 11) {
             return 'Selamat Pagi';
         } else if (currentHour >= 11 && currentHour < 15) {
@@ -28,21 +51,15 @@ export const ListHeader = () => {
     };
 
     const greeting = getGreeting();
+    const userName = user ? `${user.firstName} ${user.lastName}` : 'Guest';
 
     return (
         <View>
             <View style={styles.header}>
                 <View>
                     <ThemedText style={styles.greetingText}>{greeting}</ThemedText>
-                    <ThemedText style={styles.userNameText}>Seno Agung</ThemedText>
-                </View>
-                <View style={styles.headerRight}>
-                    <View style={styles.profileImageContainer}>
-                        <FontAwesome name="user-circle" size={40} color="#687076" />
-                    </View>
-                    <TouchableOpacity onPress={logout} style={styles.logoutButton}>
-                        <FontAwesome name="sign-out" size={24} color="#687076" />
-                    </TouchableOpacity>
+                    {/* Nama pengguna sekarang dinamis */}
+                    <ThemedText style={styles.userNameText}>{userName}</ThemedText>
                 </View>
             </View>
             <View style={styles.promoCard}>
@@ -83,18 +100,12 @@ export const ListHeader = () => {
     );
 };
 
-
 const styles = StyleSheet.create({
     header: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
         paddingVertical: 10,
-    },
-    headerRight: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 10,
     },
     greetingText: {
         fontSize: 25,
@@ -103,16 +114,6 @@ const styles = StyleSheet.create({
     userNameText: {
         fontSize: 18,
         color: '#687076',
-    },
-    profileImageContainer: {
-        width: 50,
-        height: 50,
-        borderRadius: 25,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    logoutButton: {
-        padding: 10,
     },
     promoCard: {
         backgroundColor: '#3D3D71',

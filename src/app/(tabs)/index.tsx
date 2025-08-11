@@ -97,7 +97,6 @@ export default function HomeScreen() {
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
             <TouchableOpacity onPress={() => handleNavigateToDetail(item.id)}>
-                {/* Hanya teruskan props yang dibutuhkan */}
                 <JobCard 
                     job={item} 
                     onDelete={() => handleDeleteJob(item.id)} 
@@ -115,7 +114,10 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   centered: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   container: { flex: 1, backgroundColor: '#F8F9FA', paddingHorizontal: 20 },
-  listContent: { paddingBottom: 20 },
+  // --- PERUBAHAN DI SINI ---
+  listContent: { 
+    paddingBottom: 100 
+  },
   seeAllButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 10, marginTop: 10, borderRadius: 12, borderWidth: 1, borderColor: '#0a7ea4' },
   seeAllButtonText: { color: '#0a7ea4', fontWeight: 'bold', marginRight: 8 },
   noJobsText: { textAlign: 'center', marginTop: 20, fontSize: 16, color: '#687076' }

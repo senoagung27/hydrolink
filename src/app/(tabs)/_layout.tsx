@@ -3,7 +3,7 @@ import { createBottomTabNavigator, BottomTabBarButtonProps } from '@react-naviga
 import { FontAwesome } from '@expo/vector-icons';
 import React from 'react';
 import { Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
-import { useRouter } from 'expo-router'; // <-- Impor useRouter
+import { useRouter } from 'expo-router';
 
 import { HapticTab } from '../../components/HapticTab';
 import { Colors } from '../../constants/Colors';
@@ -14,7 +14,7 @@ import HomeScreen from './index';
 import ExploreScreen from './explore';
 import SavedJobsScreen from './saved-jobs';
 import AddJobScreen from './add-job';
-import MessagesScreen from './messages';
+import ProfileScreen from './profile'; // <-- Import the new Profile screen
 
 const Tab = createBottomTabNavigator();
 
@@ -47,7 +47,7 @@ export default function TabLayout() {
   const colorScheme = useColorScheme();
   const activeColor = Colors[colorScheme ?? 'light'].tint;
   const inactiveColor = Colors[colorScheme ?? 'light'].tabIconDefault;
-  const router = useRouter(); // <-- Buat instance router
+  const router = useRouter(); 
 
   return (
     <Tab.Navigator
@@ -65,7 +65,7 @@ export default function TabLayout() {
           ...styles.shadow,
         },
       }}>
-      {/* ... (Tab.Screen untuk Home, Explore, Messages, SavedJobs tetap sama) ... */}
+      {/* Screens for Home, Explore, and Add Job remain the same */}
       <Tab.Screen
         name="Home"
         component={HomeScreen}
@@ -90,15 +90,13 @@ export default function TabLayout() {
           tabBarButton: (props) => <HapticTab {...props} />,
         }}
       />
-
-      {/* PERBARUI BAGIAN INI */}
       <Tab.Screen
-        name="add-job" // Sesuaikan nama dengan nama berkas
+        name="add-job"
         component={AddJobScreen}
         listeners={{
           tabPress: (e) => {
-            e.preventDefault(); // Mencegah navigasi default
-            router.push('/(tabs)/add-job'); // Buka modal sebagai gantinya
+            e.preventDefault();
+            router.push('/(tabs)/add-job');
           },
         }}
         options={{
@@ -106,19 +104,6 @@ export default function TabLayout() {
             <FontAwesome name="plus" size={24} color="#ffffff" />
           ),
           tabBarButton: (props) => <CustomAddButton {...props} />,
-        }}
-      />
-      
-      <Tab.Screen
-        name="Messages"
-        component={MessagesScreen}
-        options={{
-          tabBarIcon: ({ focused }) => (
-            <View style={styles.iconContainer}>
-              <FontAwesome name="comment-o" size={26} color={focused ? activeColor : inactiveColor} />
-            </View>
-          ),
-          tabBarButton: (props) => <HapticTab {...props} />,
         }}
       />
       <Tab.Screen
@@ -129,6 +114,20 @@ export default function TabLayout() {
           tabBarIcon: ({ focused }) => (
             <View style={styles.iconContainer}>
                 <FontAwesome name="bookmark-o" size={26} color={focused ? activeColor : inactiveColor} />
+            </View>
+          ),
+          tabBarButton: (props) => <HapticTab {...props} />,
+        }}
+      />
+       {/* MODIFIED PART: Replaced Messages with Profile */}
+       <Tab.Screen
+        name="profile"
+        component={ProfileScreen}
+        options={{
+          title: 'Profile',
+          tabBarIcon: ({ focused }) => (
+            <View style={styles.iconContainer}>
+              <FontAwesome name="user-o" size={26} color={focused ? activeColor : inactiveColor} />
             </View>
           ),
           tabBarButton: (props) => <HapticTab {...props} />,

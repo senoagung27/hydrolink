@@ -34,7 +34,6 @@ export const JobCard = ({ job, onDelete }: JobCardProps) => {
     <>
       <View style={styles.card}>
         <View style={styles.cardHeader}>
-          {/* Bagian Info (Logo & Teks) */}
           <View style={styles.companyInfo}>
             <View style={[styles.logoContainer, { backgroundColor: job.logoBackgroundColor }]}>
               <FontAwesome name={job.logo as any} size={24} color={job.logoColor} />
