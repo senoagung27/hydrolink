@@ -1,3 +1,4 @@
+// src/app/(tabs)/saved-jobs.tsx
 import React from 'react';
 import { ActivityIndicator, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -15,7 +16,6 @@ export default function SavedJobsScreen() {
     handleRefresh,
     handleNavigateToDetail,
     handleDeleteJob,
-    handleUpdateJob,
     deleteAllJobs,
   } = useSavedJobs();
 
@@ -41,7 +41,7 @@ export default function SavedJobsScreen() {
         data={savedJobs}
         renderItem={({ item }) => (
           <TouchableOpacity onPress={() => handleNavigateToDetail(item.id)}>
-            <JobCard job={item} onDelete={() => handleDeleteJob(item.id)} onUpdate={handleUpdateJob} />
+            <JobCard job={item} onDelete={() => handleDeleteJob(item.id)} />
           </TouchableOpacity>
         )}
         keyExtractor={(item) => item.id}
@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 20,
-    paddingTop: 20, // Add padding top to the header itself
+    paddingTop: 20,
   },
   deleteAllText: {
     color: '#FF6347',

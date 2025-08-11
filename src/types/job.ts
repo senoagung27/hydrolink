@@ -1,3 +1,4 @@
+// src/types/job.ts
 export interface Job {
   id: string;
   logo: string; 
@@ -24,5 +25,5 @@ export interface Job {
 export type JobCardProps = {
   job: Job;
   onDelete: (jobId: string) => void;
-  onUpdate: (job: Job) => void;
+  onUpdate?: (job: Job) => void;
 };

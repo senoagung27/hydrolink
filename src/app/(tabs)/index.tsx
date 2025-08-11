@@ -13,19 +13,22 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { JobCard } from '../../components/JobCard';
-import { ListHeader } from '../../components/ListHeader'; // Import ListHeader
+import { ListHeader } from '../../components/ListHeader';
 import SkeletonCard from '../../components/SkeletonCard';
 import { ThemedView } from '../../components/ThemedView';
 import { useJob } from '../../context/JobContext';
 import { Job } from '../../types/job';
-import { useSavedJobs } from '../../hooks/useSavedJobs'; // NEW: Import the custom hook
+import { useSavedJobs } from '../../hooks/useSavedJobs';
 
 const JOBS_PER_PAGE = 3;
 
 export default function HomeScreen() {
   const { jobs, loading: initialLoading } = useJob();
-  const router = useRouter();
-
+  const {
+      handleNavigateToDetail,
+      handleDeleteJob,
+  } = useSavedJobs();
+  
   const [displayedJobs, setDisplayedJobs] = useState<Job[]>([]);
   const [page, setPage] = useState(1);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -35,13 +38,10 @@ export default function HomeScreen() {
     if (jobs.length > 0) {
       setDisplayedJobs(jobs.slice(0, JOBS_PER_PAGE));
       setAllJobsLoaded(jobs.length <= JOBS_PER_PAGE);
+    } else {
+      setDisplayedJobs([]);
     }
   }, [jobs]);
-   const {
-      handleNavigateToDetail,
-      handleDeleteJob,
-      handleUpdateJob,
-    } = useSavedJobs();
 
   const handleLoadMore = useCallback(() => {
     if (loadingMore || allJobsLoaded) return;
@@ -75,11 +75,12 @@ export default function HomeScreen() {
     if (loadingMore) {
       return <ActivityIndicator size="large" style={{ marginVertical: 20 }} />;
     }
-
     if (allJobsLoaded) {
       return null;
     }
-
+    if (displayedJobs.length === 0) {
+        return <Text style={styles.noJobsText}>Tidak ada pekerjaan yang tersedia.</Text>;
+    }
     return (
       <TouchableOpacity style={styles.seeAllButton} onPress={handleLoadMore}>
         <Text style={styles.seeAllButtonText}>Lihat Lebih Banyak</Text>
@@ -95,9 +96,13 @@ export default function HomeScreen() {
         data={displayedJobs}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => handleNavigateToDetail(item.id)}>
-            <JobCard job={item} onDelete={handleDeleteJob} onUpdate={handleUpdateJob} />
-          </TouchableOpacity>
+            <TouchableOpacity onPress={() => handleNavigateToDetail(item.id)}>
+                {/* Hanya teruskan props yang dibutuhkan */}
+                <JobCard 
+                    job={item} 
+                    onDelete={() => handleDeleteJob(item.id)} 
+                />
+            </TouchableOpacity>
         )}
         ListFooterComponent={ListFooter}
         contentContainerStyle={styles.listContent}
@@ -108,32 +113,10 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  centered: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  container: {
-    flex: 1,
-    backgroundColor: '#F8F9FA',
-    paddingHorizontal: 20,
-  },
-  listContent: {
-    paddingBottom: 20,
-  },
-  seeAllButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 10,
-    marginTop: 10,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#0a7ea4',
-  },
-  seeAllButtonText: {
-    color: '#0a7ea4',
-    fontWeight: 'bold',
-    marginRight: 8,
-  },
+  centered: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  container: { flex: 1, backgroundColor: '#F8F9FA', paddingHorizontal: 20 },
+  listContent: { paddingBottom: 20 },
+  seeAllButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 10, marginTop: 10, borderRadius: 12, borderWidth: 1, borderColor: '#0a7ea4' },
+  seeAllButtonText: { color: '#0a7ea4', fontWeight: 'bold', marginRight: 8 },
+  noJobsText: { textAlign: 'center', marginTop: 20, fontSize: 16, color: '#687076' }
 });

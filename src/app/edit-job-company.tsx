@@ -2,25 +2,22 @@
 import { FontAwesome } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import React, { useMemo, useState } from 'react';
-import {
-    FlatList,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
-} from 'react-native';
+import { FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View, } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { COMPANIES } from '../constants/companies';
 
 export default function EditJobCompanyScreen() {
     const router = useRouter();
-    const { id } = useLocalSearchParams<{ id: string }>();
+    const params = useLocalSearchParams<{ id: string }>();
+    const { id } = params;
     const [searchQuery, setSearchQuery] = useState('');
 
     const handleSelect = (companyName: string) => {
         if (id) {
-            router.replace(`/edit-job?id=${id}&selectedCompany=${companyName}`);
+            router.replace({ 
+                pathname: '/edit-job', 
+                params: { ...params, selectedCompany: companyName }
+            });
         } else {
             router.back();
         }
@@ -88,44 +85,14 @@ export default function EditJobCompanyScreen() {
 
 const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: '#FDFDFD' },
-    header: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingHorizontal: 15,
-        paddingTop: 10,
-        paddingBottom: 20,
-    },
-    backButton: {
-        padding: 5,
-        marginRight: 15,
-    },
-    title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        color: '#1E1E2D',
-    },
-    searchContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: '#FFFFFF',
-        borderRadius: 12,
-        marginHorizontal: 20,
-        paddingHorizontal: 15,
-        borderWidth: 1,
-        borderColor: '#F0F0F0',
-        marginBottom: 10,
-    },
+    header: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 15, paddingTop: 10, paddingBottom: 20, },
+    backButton: { padding: 5, marginRight: 15, },
+    title: { fontSize: 24, fontWeight: 'bold', color: '#1E1E2D', },
+    searchContainer: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#FFFFFF', borderRadius: 12, marginHorizontal: 20, paddingHorizontal: 15, borderWidth: 1, borderColor: '#F0F0F0', marginBottom: 10, },
     searchIcon: { marginRight: 10 },
     logoIcon: { marginRight: 15, width: 24, textAlign: 'center' },
     searchInput: { flex: 1, height: 50, fontSize: 16 },
-    item: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingVertical: 12,
-        paddingHorizontal: 25,
-        borderBottomWidth: 1,
-        borderBottomColor: '#F0F0F0',
-    },
+    item: { flexDirection: 'row', alignItems: 'center', paddingVertical: 12, paddingHorizontal: 25, borderBottomWidth: 1, borderBottomColor: '#F0F0F0', },
     companyContainer: { flexDirection: 'column' },
     companyName: { fontSize: 16, fontWeight: '500', color: '#1E1E2D' },
     companyCategory: { fontSize: 14, color: '#687076', marginTop: 2 },
