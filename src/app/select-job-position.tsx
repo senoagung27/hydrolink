@@ -1,6 +1,6 @@
 // src/app/select-job-position.tsx
 
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import React, { useState, useMemo } from 'react';
 import {
   View,
@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FontAwesome } from '@expo/vector-icons';
-import { useAddJob } from '../context/AddJobContext'; // <-- Impor hook konteks
+import { useAddJob } from '../context/AddJobContext'; 
 
 const JOB_POSITIONS = [
   'Assistant', 'Associate', 'Administrative Assistant', 'Account Manager', 
@@ -23,12 +23,19 @@ const JOB_POSITIONS = [
 
 export default function SelectJobPositionScreen() {
   const router = useRouter();
-  const { setJobDetail } = useAddJob(); // <-- Dapatkan fungsi dari konteks
+  const { source, id } = useLocalSearchParams<{ source?: string, id?: string }>();
+  const { setJobDetail } = useAddJob();
   const [searchQuery, setSearchQuery] = useState('');
 
   const handleSelect = (position: string) => {
-    setJobDetail('job_position', position); // <-- Perbarui state di konteks
-    router.back(); // <-- Kembali ke layar sebelumnya
+    // If coming from the edit screen, replace the screen with updated params
+    if (source === 'edit-job' && id) {
+      router.replace(`/edit-job?id=${id}&selectedPosition=${position}`);
+    } else {
+      // Original behavior for the "add job" flow
+      setJobDetail('job_position', position);
+      router.back();
+    }
   };
 
   const filteredPositions = useMemo(() =>
@@ -52,6 +59,7 @@ export default function SelectJobPositionScreen() {
                 style={styles.searchInput}
                 value={searchQuery}
                 onChangeText={setSearchQuery}
+                autoFocus
             />
             {searchQuery.length > 0 && (
                 <TouchableOpacity onPress={() => setSearchQuery('')}>

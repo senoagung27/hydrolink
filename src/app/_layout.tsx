@@ -48,6 +48,9 @@ function RootLayoutNav() {
       <Stack.Screen name="add-job-description" options={{ headerShown: false }} />
       <Stack.Screen name="(tabs)/add-job" options={{ presentation: 'modal', headerShown: false }} />
       <Stack.Screen name="edit-job" options={{ headerShown: false }} />
+      <Stack.Screen name="edit-job-location" options={{ headerShown: false }} />
+      <Stack.Screen name="edit-job-company" options={{ headerShown: false }} />
+      <Stack.Screen name="edit-job-description" options={{ headerShown: false }} />
     </Stack>
   );
 }
