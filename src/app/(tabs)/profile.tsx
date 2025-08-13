@@ -2,7 +2,6 @@
 import { FontAwesome } from '@expo/vector-icons';
 import React, { useEffect, useState } from 'react';
 import {
-  ActivityIndicator,
   Alert,
   Image,
   ScrollView,
@@ -14,9 +13,9 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../../context/AuthContext';
 import { User } from '../../types/user';
+import { ProfileSkeleton } from '../../components/ProfileSkeleton'; // Import the skeleton component
 
 export default function ProfileScreen() {
-  // Ambil fungsi logout dari context
   const { token, logout } = useAuth();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
@@ -38,19 +37,26 @@ export default function ProfileScreen() {
         if (response.ok) {
           setUser(data);
         } else {
-          throw new Error(data.message || 'Failed to fetch user data');
+          if (response.status === 401 || data.message.includes("Invalid token")) {
+            Alert.alert("Session Expired", "Your session has expired. Please log in again.");
+            logout(); // Panggil fungsi logout jika token tidak valid
+          } else {
+            throw new Error(data.message || 'Failed to fetch user data');
+          }
         }
       } catch (error) {
         console.error(error);
-        // Tampilkan pesan jika gagal
-        Alert.alert("Error", "Could not fetch profile data.");
+        // Tampilkan pesan jika gagal selain karena token expired
+        if (token) { // Hanya tampilkan error jika logout belum dipicu
+            Alert.alert("Error", "Could not fetch profile data.");
+        }
       } finally {
         setLoading(false);
       }
     };
 
     fetchUser();
-  }, [token]);
+  }, [token, logout]);
   
   const handleLogout = () => {
       Alert.alert(
@@ -66,16 +72,16 @@ export default function ProfileScreen() {
 
   if (loading) {
     return (
-      <View style={styles.centered}>
-        <ActivityIndicator size="large" color="#4A437E" />
-      </View>
+      <SafeAreaView style={styles.container} edges={['top']}>
+        <ProfileSkeleton />
+      </SafeAreaView>
     );
   }
 
   if (!user) {
     return (
       <View style={styles.centered}>
-        <Text>Could not load profile.</Text>
+        <Text>Could not load profile. Please login again.</Text>
       </View>
     );
   }

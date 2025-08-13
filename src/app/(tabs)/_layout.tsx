@@ -11,10 +11,10 @@ import { useColorScheme } from '../../hooks/useColorScheme';
 
 // Import all necessary screen components
 import HomeScreen from './index';
-import ExploreScreen from './explore';
+import ExploreScreen from './explore'; // <-- This will now render our Connections screen
 import SavedJobsScreen from './saved-jobs';
 import AddJobScreen from './add-job';
-import ProfileScreen from './profile'; // <-- Import the new Profile screen
+import ProfileScreen from './profile'; 
 
 const Tab = createBottomTabNavigator();
 
@@ -65,7 +65,6 @@ export default function TabLayout() {
           ...styles.shadow,
         },
       }}>
-      {/* Screens for Home, Explore, and Add Job remain the same */}
       <Tab.Screen
         name="Home"
         component={HomeScreen}
@@ -79,12 +78,14 @@ export default function TabLayout() {
         }}
       />
       <Tab.Screen
-        name="Explore"
+        name="Explore" // The route name remains, but the UI and icon will change
         component={ExploreScreen}
         options={{
+          title: "Connections", // Title for the screen
           tabBarIcon: ({ focused }) => (
             <View style={styles.iconContainer}>
-              <FontAwesome name="share-alt" size={26} color={focused ? activeColor : inactiveColor} />
+              {/* Changed icon from 'share-alt' to 'users' */}
+              <FontAwesome name="users" size={26} color={focused ? activeColor : inactiveColor} />
             </View>
           ),
           tabBarButton: (props) => <HapticTab {...props} />,
@@ -119,7 +120,6 @@ export default function TabLayout() {
           tabBarButton: (props) => <HapticTab {...props} />,
         }}
       />
-       {/* MODIFIED PART: Replaced Messages with Profile */}
        <Tab.Screen
         name="profile"
         component={ProfileScreen}

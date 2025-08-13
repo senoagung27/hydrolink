@@ -1,6 +1,6 @@
 // src/components/ListHeader.tsx
 import { FontAwesome } from '@expo/vector-icons';
-import React, { useEffect, useState } from 'react';
+import React, { useMemo } from 'react';
 import {
     Image,
     StyleSheet,
@@ -9,14 +9,39 @@ import {
     View,
 } from 'react-native';
 import { ThemedText } from './ThemedText';
-import { useAuth } from '../context/AuthContext'; 
-import { User } from '../types/user'; 
+import { useAuth } from '../context/AuthContext';
+import { User } from '../types/user';
+import { useJob } from '../context/JobContext'; // Import useJob
 
 export const ListHeader = () => {
-    const { token } = useAuth(); 
-    const [user, setUser] = useState<User | null>(null);
+    const { token } = useAuth();
+    const [user, setUser] = React.useState<User | null>(null);
+    const { jobs } = useJob(); // Mengambil data pekerjaan dari konteks
 
-    useEffect(() => {
+    // Logika untuk menghitung pekerjaan berdasarkan workplace_type
+    const jobCounts = useMemo(() => {
+        const counts = {
+            'On-site': 0,
+            Remote: 0,
+            Hybrid: 0,
+        };
+
+        // Filter pekerjaan yang bukan 'Part time'
+        const filteredJobs = jobs.filter(job => job.job_type !== 'Part time');
+
+        filteredJobs.forEach(job => {
+            if (job.workplace_type === 'Remote') {
+                counts.Remote++;
+            } else if (job.workplace_type === 'Hybrid') {
+                counts.Hybrid++;
+            } else if (job.workplace_type === 'On-site' || job.job_type === 'Full time') {
+                counts['On-site']++;
+            }
+        });
+        return counts;
+    }, [jobs]);
+
+    React.useEffect(() => {
         const fetchUser = async () => {
             if (!token) return;
             try {
@@ -58,7 +83,6 @@ export const ListHeader = () => {
             <View style={styles.header}>
                 <View>
                     <ThemedText style={styles.greetingText}>{greeting}</ThemedText>
-                    {/* Nama pengguna sekarang dinamis */}
                     <ThemedText style={styles.userNameText}>{userName}</ThemedText>
                 </View>
             </View>
@@ -76,20 +100,23 @@ export const ListHeader = () => {
                 />
             </View>
             <ThemedText style={styles.sectionTitle}>Find Your Job</ThemedText>
+            {/* -- Kontainer Kartu Pekerjaan yang Diperbarui -- */}
             <View style={styles.findJobContainer}>
+                {/* Kartu Remote (Besar) */}
                 <TouchableOpacity style={[styles.findJobCard, styles.remoteJobCard]}>
                     <FontAwesome name="file-text-o" size={24} color="#25A3A3" />
-                    <Text style={styles.findJobCardNumber}>44.5k</Text>
+                    <Text style={styles.findJobCardNumber}>{jobCounts.Remote}</Text>
                     <Text style={styles.findJobCardLabel}>Remote Job</Text>
                 </TouchableOpacity>
+                {/* Kartu Samping (On-site & Hybrid) */}
                 <View style={styles.sideJobCards}>
                     <TouchableOpacity style={[styles.findJobCard, styles.fullTimeCard]}>
-                        <Text style={styles.findJobCardNumber}>66.8k</Text>
-                        <Text style={styles.findJobCardLabel}>Full Time</Text>
+                        <Text style={styles.findJobCardNumber}>{jobCounts['On-site']}</Text>
+                        <Text style={styles.findJobCardLabel}>On-site</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={[styles.findJobCard, styles.partTimeCard]}>
-                        <Text style={styles.findJobCardNumber}>38.9k</Text>
-                        <Text style={styles.findJobCardLabel}>Part Time</Text>
+                    <TouchableOpacity style={[styles.findJobCard, styles.hybridJobCard]}>
+                        <Text style={styles.findJobCardNumber}>{jobCounts.Hybrid}</Text>
+                        <Text style={styles.findJobCardLabel}>Hybrid</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -125,6 +152,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         height: 140,
+        overflow: 'hidden',
     },
     promoTextLarge: {
         color: 'white',
@@ -154,7 +182,7 @@ const styles = StyleSheet.create({
         resizeMode: 'contain',
         position: 'absolute',
         right: 0,
-        bottom: 0,
+        bottom: -20,
     },
     sectionTitle: {
         fontSize: 20,
@@ -162,37 +190,34 @@ const styles = StyleSheet.create({
     },
     findJobContainer: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
         marginVertical: 10,
         gap: 15,
+        height: 170, // Menetapkan tinggi kontainer
     },
     remoteJobCard: {
         flex: 1,
         backgroundColor: '#AFE1E1',
-        paddingVertical: 20,
-        alignItems: 'center',
-        justifyContent: 'center',
-        height: 160,
+        height: '100%', // Mengisi tinggi kontainer
     },
     sideJobCards: {
         flex: 1,
+        flexDirection: 'column',
         gap: 15,
+        height: '100%',
     },
     findJobCard: {
         borderRadius: 20,
         padding: 15,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     fullTimeCard: {
         backgroundColor: '#D0C0FF',
-        alignItems: 'center',
         flex: 1,
-        justifyContent: 'center',
     },
-    partTimeCard: {
-        backgroundColor: '#FADCB3',
-        alignItems: 'center',
+    hybridJobCard: { // Style baru untuk kartu Hybrid
+        backgroundColor: '#FADCB3', // Menggunakan warna dari kartu Part Time sebelumnya
         flex: 1,
-        justifyContent: 'center',
     },
     findJobCardNumber: {
         fontSize: 18,
