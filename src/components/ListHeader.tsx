@@ -1,5 +1,6 @@
 // src/components/ListHeader.tsx
 import { FontAwesome } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import React, { useMemo } from 'react';
 import {
     Image,
@@ -11,14 +12,21 @@ import {
 import { ThemedText } from './ThemedText';
 import { useAuth } from '../context/AuthContext';
 import { User } from '../types/user';
-import { useJob } from '../context/JobContext'; // Import useJob
+import { useJob } from '../context/JobContext';
 
 export const ListHeader = () => {
     const { token } = useAuth();
     const [user, setUser] = React.useState<User | null>(null);
-    const { jobs } = useJob(); // Mengambil data pekerjaan dari konteks
+    const { jobs } = useJob();
+    const router = useRouter();
 
-    // Logika untuk menghitung pekerjaan berdasarkan workplace_type
+    const handleFilterPress = (filter: string) => {
+        // This function navigates to the saved jobs tab and passes the filter
+        // as a URL query parameter. This is a reliable way to pass data between screens.
+        router.push(`/saved-jobs?filter=${filter}`);
+    };
+
+    // Logic to count jobs by workplace_type
     const jobCounts = useMemo(() => {
         const counts = {
             'On-site': 0,
@@ -26,7 +34,6 @@ export const ListHeader = () => {
             Hybrid: 0,
         };
 
-        // Filter pekerjaan yang bukan 'Part time'
         const filteredJobs = jobs.filter(job => job.job_type !== 'Part time');
 
         filteredJobs.forEach(job => {
@@ -100,26 +107,28 @@ export const ListHeader = () => {
                 />
             </View>
             <ThemedText style={styles.sectionTitle}>Find Your Job</ThemedText>
-            {/* -- Kontainer Kartu Pekerjaan yang Diperbarui -- */}
+            
+            {/* --- THIS IS THE CLICKABLE SECTION --- */}
             <View style={styles.findJobContainer}>
-                {/* Kartu Remote (Besar) */}
-                <TouchableOpacity style={[styles.findJobCard, styles.remoteJobCard]}>
+                {/* Remote Job Card */}
+                <TouchableOpacity style={[styles.findJobCard, styles.remoteJobCard]} onPress={() => handleFilterPress('Remote')}>
                     <FontAwesome name="file-text-o" size={24} color="#25A3A3" />
                     <Text style={styles.findJobCardNumber}>{jobCounts.Remote}</Text>
                     <Text style={styles.findJobCardLabel}>Remote Job</Text>
                 </TouchableOpacity>
-                {/* Kartu Samping (On-site & Hybrid) */}
+                {/* On-site & Hybrid Cards */}
                 <View style={styles.sideJobCards}>
-                    <TouchableOpacity style={[styles.findJobCard, styles.fullTimeCard]}>
+                    <TouchableOpacity style={[styles.findJobCard, styles.fullTimeCard]} onPress={() => handleFilterPress('On-site')}>
                         <Text style={styles.findJobCardNumber}>{jobCounts['On-site']}</Text>
                         <Text style={styles.findJobCardLabel}>On-site</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={[styles.findJobCard, styles.hybridJobCard]}>
+                    <TouchableOpacity style={[styles.findJobCard, styles.hybridJobCard]} onPress={() => handleFilterPress('Hybrid')}>
                         <Text style={styles.findJobCardNumber}>{jobCounts.Hybrid}</Text>
                         <Text style={styles.findJobCardLabel}>Hybrid</Text>
                     </TouchableOpacity>
                 </View>
             </View>
+
             <View style={styles.recentJobsHeader}>
                 <ThemedText style={styles.sectionTitle}>Recent Job List</ThemedText>
             </View>
@@ -127,6 +136,7 @@ export const ListHeader = () => {
     );
 };
 
+// Styles remain the same
 const styles = StyleSheet.create({
     header: {
         flexDirection: 'row',
@@ -192,12 +202,12 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         marginVertical: 10,
         gap: 15,
-        height: 170, // Menetapkan tinggi kontainer
+        height: 170,
     },
     remoteJobCard: {
         flex: 1,
         backgroundColor: '#AFE1E1',
-        height: '100%', // Mengisi tinggi kontainer
+        height: '100%',
     },
     sideJobCards: {
         flex: 1,
@@ -215,8 +225,8 @@ const styles = StyleSheet.create({
         backgroundColor: '#D0C0FF',
         flex: 1,
     },
-    hybridJobCard: { // Style baru untuk kartu Hybrid
-        backgroundColor: '#FADCB3', // Menggunakan warna dari kartu Part Time sebelumnya
+    hybridJobCard: {
+        backgroundColor: '#FADCB3',
         flex: 1,
     },
     findJobCardNumber: {

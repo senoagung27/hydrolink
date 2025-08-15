@@ -39,9 +39,14 @@ export const JobDetailSkeleton = () => {
                 </View>
 
                 <View style={styles.infoCardsContainer}>
-                    <SkeletonPiece style={styles.infoCard} />
-                    <SkeletonPiece style={styles.infoCard} />
-                    <SkeletonPiece style={styles.infoCard} />
+                    <View style={styles.infoCardRow}>
+                        <SkeletonPiece style={styles.infoCard} />
+                        <SkeletonPiece style={styles.infoCard} />
+                    </View>
+                    <View style={styles.infoCardRow}>
+                        <SkeletonPiece style={styles.infoCard} />
+                        <SkeletonPiece style={styles.infoCard} />
+                    </View>
                 </View>
 
                 <View style={styles.section}>
@@ -70,7 +75,16 @@ const styles = StyleSheet.create({
     container: { flex: 1, paddingHorizontal: 20 },
     header: { alignItems: 'center', paddingVertical: 20, marginBottom: 20 },
     logo: { width: 80, height: 80, borderRadius: 16, marginBottom: 16 },
-    infoCardsContainer: { flexDirection: 'row', justifyContent: 'space-around', marginBottom: 24, gap: 10 },
+    infoCardsContainer: {
+        flexDirection: 'column',
+        gap: 10,
+        marginBottom: 24,
+    },
+    infoCardRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        gap: 10,
+    },
     infoCard: { flex: 1, height: 60, borderRadius: 12 },
     section: { marginBottom: 24 },
     skeleton: {

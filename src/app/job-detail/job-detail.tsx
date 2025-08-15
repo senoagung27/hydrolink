@@ -74,9 +74,14 @@ export default function JobDetailScreen() {
                 </View>
 
                 <View style={styles.infoCardsContainer}>
-                    <InfoCard label="Salary" value={job.salary} />
-                    <InfoCard label="Job Type" value={job.job_type ?? ''} />
-                    <InfoCard label="Position" value={job.position ?? ''} />
+                    <View style={styles.infoCardRow}>
+                        <InfoCard label="Salary" value={job.salary} />
+                        <InfoCard label="Job Type" value={job.job_type ?? ''} />
+                    </View>
+                    <View style={styles.infoCardRow}>
+                        <InfoCard label="Position" value={job.position ?? ''} />
+                        <InfoCard label="Workplace Type" value={job.workplace_type ?? ''} />
+                    </View>
                 </View>
 
                 <View style={styles.section}>
@@ -98,7 +103,7 @@ export default function JobDetailScreen() {
                 
                 <View style={styles.section}>
                     <ThemedText type="subtitle">Location</ThemedText>
-                    <ThemedText style={styles.locationText}>Overlook Avenue, Belleville, NJ, USA</ThemedText>
+                    <ThemedText style={styles.locationText}>{job.location}</ThemedText>
                     <View style={styles.mapPlaceholder}>
                         <FontAwesome name="map-marker" size={40} style={styles.mapIcon} />
                         <ThemedText>Map View</ThemedText>
@@ -111,6 +116,7 @@ export default function JobDetailScreen() {
                     <View style={styles.infoRow}><ThemedText style={styles.infoLabel}>Qualification</ThemedText><ThemedText style={styles.infoValue}>{job.qualification}</ThemedText></View>
                     <View style={styles.infoRow}><ThemedText style={styles.infoLabel}>Experience</ThemedText><ThemedText style={styles.infoValue}>{job.experience}</ThemedText></View>
                     <View style={styles.infoRow}><ThemedText style={styles.infoLabel}>Job Type</ThemedText><ThemedText style={styles.infoValue}>{job.job_type}</ThemedText></View>
+                    <View style={styles.infoRow}><ThemedText style={styles.infoLabel}>Workplace Type</ThemedText><ThemedText style={styles.infoValue}>{job.workplace_type}</ThemedText></View>
                     <View style={styles.infoRow}><ThemedText style={styles.infoLabel}>Specialization</ThemedText><ThemedText style={styles.infoValue}>{job.specialization}</ThemedText></View>
                 </View>
 
@@ -145,9 +151,14 @@ const styles = StyleSheet.create({
     applyButton: { backgroundColor: '#1E1E2D', paddingVertical: 15, borderRadius: 12, alignItems: 'center' },
     applyButtonText: { color: '#FFFFFF', fontSize: 16, fontWeight: 'bold' },
     infoCardsContainer: {
+        flexDirection: 'column',
+        gap: 10,
+        marginBottom: 24,
+    },
+    infoCardRow: {
         flexDirection: 'row',
         justifyContent: 'space-around',
-        marginBottom: 24,
+        gap: 10,
     },
     locationText: {
         marginTop: 8,

@@ -1,33 +1,45 @@
-import React, { useState } from 'react';
-import { TouchableOpacity, Text, StyleSheet } from 'react-native';
+import React from 'react';
+import { StyleSheet, Text, TouchableOpacity } from 'react-native';
+
 import { useThemeColor } from '../hooks/useThemeColor';
 
 export type ThemedButtonProps = {
   title: string;
   onPress: () => void;
+  isActive: boolean; // <-- Tambahkan prop ini
+  style?: any;
+  textStyle?: any;
 };
 
-export function ThemedButton({ title, onPress }: ThemedButtonProps) {
-  const [isActive, setIsActive] = useState(false);
+export function ThemedButton({
+  title,
+  onPress,
+  isActive,
+  style,
+  textStyle,
+}: ThemedButtonProps) {
+  // Hapus state internal 'isActive'
   const activeColor = useThemeColor({}, 'tint');
   const inactiveColor = useThemeColor({}, 'tagBackground');
   const activeTextColor = useThemeColor({}, 'background');
   const inactiveTextColor = useThemeColor({}, 'text');
 
-  const handlePress = () => {
-    setIsActive(!isActive);
-    onPress();
-  };
-
   return (
     <TouchableOpacity
       style={[
         styles.button,
+        // Gunakan prop 'isActive' untuk menentukan style
         { backgroundColor: isActive ? activeColor : inactiveColor },
+        style,
       ]}
-      onPress={handlePress}
+      onPress={onPress} // Gunakan 'onPress' secara langsung
     >
-      <Text style={{ color: isActive ? activeTextColor : inactiveTextColor }}>
+      <Text
+        style={[
+          { color: isActive ? activeTextColor : inactiveTextColor },
+          styles.buttonText,
+          textStyle,
+        ]}>
         {title}
       </Text>
     </TouchableOpacity>
@@ -36,10 +48,14 @@ export function ThemedButton({ title, onPress }: ThemedButtonProps) {
 
 const styles = StyleSheet.create({
   button: {
-    padding: 10,
-    borderRadius: 5,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
-    marginVertical: 5,
+    marginHorizontal: 4,
+  },
+  buttonText: {
+    fontWeight: '500',
   },
 });
